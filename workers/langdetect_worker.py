@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """
 Language Detection Worker
 Detects and updates the language of news items in the database.

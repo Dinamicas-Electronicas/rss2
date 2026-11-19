@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 

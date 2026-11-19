@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- 45-limpieza-textos.sql
 -- Columnas que usa el binario `sanitize` (backend/cmd/sanitize) para limpiar
 -- (backfill) los resúmenes/títulos ya existentes y para poder deshacerlo.

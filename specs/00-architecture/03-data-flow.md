@@ -188,3 +188,7 @@
 | `./data/redis-data` | Redis AOF | Caché, reconstruible |
 | `./models` | NLLB + spaCy + MiniLM | Read-only |
 | `./hf_cache` | HuggingFace cache | Build artifact |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

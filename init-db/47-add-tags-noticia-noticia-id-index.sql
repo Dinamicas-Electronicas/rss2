@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Índice para optimizar consultas de entity news
 -- El JOIN más común es: tags_noticia tn JOIN tags t ON tn.tag_id = t.id WHERE tn.noticia_id = $1
 -- Sin este índice, Postgres hace un sequential scan en tags_noticia para cada noticia

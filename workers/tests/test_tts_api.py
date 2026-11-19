@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Pruebas de la API interna del servicio de TTS.
 
 Incluyen la proteccion de los endpoints (9): autenticacion por clave y

@@ -451,3 +451,7 @@ Noticiario 1 montado: 6 noticias, 138.0s de audio
 
 **Conclusión operativa:** el único punto de pérdida de datos real es el **batch insert del ingestor**
 (no hay cola de reintento) y el estado `error` del traductor (terminal, sin re-encolado automático).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

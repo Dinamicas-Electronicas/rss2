@@ -176,3 +176,7 @@ Para cada cambio, verificar:
 > 4. **Specs**: `specs/`
 
 Orden de prioridad ante contradicciones.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

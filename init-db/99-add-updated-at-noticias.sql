@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Migration: Add updated_at to noticias
 -- Date: 2026-10-04
 -- Reason: El modelo Go News y NewsWithTranslations tienen UpdatedAt, pero la columna no existe en BD.

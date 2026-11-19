@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Migration: Add pending feeds table for review workflow
 -- This table stores discovered feeds that need manual review/approval
 

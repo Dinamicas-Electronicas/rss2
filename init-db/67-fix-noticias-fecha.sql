@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Correccion de las fechas no creibles y de las URLs rotas de las noticias.
 --
 -- 1) FECHAS

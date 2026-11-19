@@ -83,3 +83,7 @@ WHERE status = 'error'
 docker compose ps
 curl http://localhost:8080/health
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

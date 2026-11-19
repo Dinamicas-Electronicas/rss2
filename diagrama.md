@@ -399,3 +399,7 @@ Cada 15 minutos:
 | redis | 6379 | - | Solo internos |
 | postgres | 5432 | - | Solo internos |
 | embeddings | 6000 | 6000 | API búsqueda semántica |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

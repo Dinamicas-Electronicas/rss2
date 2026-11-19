@@ -56,3 +56,7 @@
   topics (`grep -q <proceso> /proc/1/cmdline`; todos `healthy`
   verificado 2026-09-14).
 - [ ] Backup automático de `pgdata` antes de cualquier rotación (hoy manual).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Pruebas del noticiario: concatenacion de varias narraciones.
 
 Comprueban que la pieza final respeta el orden, los silencios y el manifiesto

@@ -254,3 +254,7 @@ docker run -d \
   -e OMP_NUM_THREADS=2 \
   rss2-remote-worker:latest
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

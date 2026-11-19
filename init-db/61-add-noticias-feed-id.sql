@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Enlace real entre noticias y feed.
 --
 -- Hasta ahora la relacion era por 'noticias.fuente_nombre' (texto), que no es

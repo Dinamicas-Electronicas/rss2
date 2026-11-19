@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Restricción UNIQUE en paises.nombre
 --
 -- 00-complete-schema.sql crea la tabla paises SIN la restricción (01.schema.sql

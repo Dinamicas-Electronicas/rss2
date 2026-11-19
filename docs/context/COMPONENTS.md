@@ -379,3 +379,7 @@ sirve Flask en `:7000` con `threaded=True`.
 | WebSocket | `/ws/worker` | **API key de worker** |
 
 Total: **~115 rutas**.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

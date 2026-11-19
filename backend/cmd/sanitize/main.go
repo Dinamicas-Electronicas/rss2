@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 // Command sanitize aplica la limpieza de textclean a las noticias que ya están
 // en la base de datos (backfill) y, opcionalmente, re-encola sus traducciones.
 //

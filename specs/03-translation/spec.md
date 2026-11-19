@@ -94,3 +94,7 @@ DB_* reales en los tres servicios; `TARGET_LANGS=es`, `SCHEDULER_BATCH/SLEEP`,
 - [ ] Decidir GPU (`--profile gpu` en máquina NVIDIA) o más réplicas CPU si
       el backlog no drena.
 - [ ] Añadir `TRANSLATOR_*`/`SCHEDULER_*` a `.env.example` si se estabilizan.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

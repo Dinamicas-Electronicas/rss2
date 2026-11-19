@@ -1,0 +1,29 @@
+RSS2 — Agregador multilingüe de noticias RSS
+
+Copyright (c) 2026 Dinámicas Electrónicas
+Contacto: dinamicas.electronicas@gmail.com
+Repositorio: https://github.com/Dinamicas-Electronicas/rss2
+Licencia del código: MIT (ver LICENSE)
+
+El código fuente de este repositorio (backend Go, workers Go y Python, frontend
+React, esquema SQL, scripts y documentación) es propiedad de Dinámicas
+Electrónicas y se distribuye bajo la licencia MIT.
+
+Terceros
+--------
+La licencia MIT de este repositorio cubre únicamente el código propio. Las
+dependencias y, sobre todo, los pesos de los modelos de terceros conservan sus
+propias licencias:
+
+  - NLLB-200 (Meta AI) — pesos bajo CC-BY-NC 4.0. Uso NO comercial.
+    https://huggingface.co/facebook/nllb-200-distilled-600M
+  - CTranslate2 — MIT
+  - spaCy y es_core_news_lg — MIT
+  - sentence-transformers — Apache-2.0
+  - Chatterbox (Resemble AI) — MIT
+  - MeloTTS — MIT
+  - OpenVoice V2 (MyShell) — MIT
+  - PostgreSQL, pgvector, Redis, nginx, React, Vite — licencias respectivas
+
+Antes de explotar comercialmente este sistema hay que revisar la licencia de
+los pesos de NLLB-200, que restringe el uso a fines no comerciales.

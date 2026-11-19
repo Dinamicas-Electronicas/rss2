@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 FROM golang:alpine AS builder
 
 WORKDIR /app

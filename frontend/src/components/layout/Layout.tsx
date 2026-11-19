@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { Search, Rss, BarChart3, Home as HomeIcon, Heart, User, Flame, Settings, Users, Tags, Database, Server, TrendingUp, Bell, X, Menu } from 'lucide-react'
 import { useEffect, useState } from 'react'

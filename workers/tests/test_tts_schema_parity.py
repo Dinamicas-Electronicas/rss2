@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """El esquema TTS debe ser el mismo en los tres sitios donde vive:
 
 - ``init-db/57-add-tts.sql`` (fuente canonica para bases nuevas)

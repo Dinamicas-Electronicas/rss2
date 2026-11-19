@@ -55,3 +55,7 @@ Fecha: 2026-10-03
 - No usar dependencias con CVEs conocidos
 - Preferir dependencias mantenidas activamente
 - Verificar licencias (MIT, BSD, Apache preferidas)
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

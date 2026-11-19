@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- 46-entity-blocklist.sql
 -- Lista de falsos positivos del NER (entidades y temas) que la API no debe
 -- mostrar y que `ner_worker` no debe volver a insertar.

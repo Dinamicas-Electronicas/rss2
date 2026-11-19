@@ -87,3 +87,7 @@ Si la auth falla, retorna 401 Unauthorized.
 - [x] Todos los fixes listados + rebuild + verificación en vivo.
 - [x] `GET /api/admin/ingest/stats` implementado (feeds total/activos con
   fallos, noticias total/7d, cobertura % por `fuente_nombre = feeds.nombre`).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

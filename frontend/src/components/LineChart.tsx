@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { useMemo, useState } from 'react'
 
 const COLORS = ['#72FF8A', '#78B9FF', '#FFC66D', '#FF5F64', '#B794F4', '#89B4FA', '#F5A623', '#F472B6']

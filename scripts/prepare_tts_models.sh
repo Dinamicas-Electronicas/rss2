@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # =============================================================================
 # Prepara los modelos del servicio de TTS.
 #

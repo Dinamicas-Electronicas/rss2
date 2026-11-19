@@ -574,3 +574,7 @@ Comenzar con un **MVP de Cloud + Capacitor** para validar el modelo de negocio, 
 2. **Android**: Seguir instrucciones en `docs/ANDROID_SETUP.md`
 
 3. **Google Play Console**: Configurar productos de suscripción
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

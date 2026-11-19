@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Acceso a Postgres del subsistema TTS.
 
 Postgres guarda estado y metadatos. Los archivos de audio viven en el volumen

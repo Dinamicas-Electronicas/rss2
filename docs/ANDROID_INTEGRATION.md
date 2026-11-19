@@ -294,3 +294,7 @@ npx tsc --noEmit
 - `docs/MONETIZATION_PLAN.md` - Plan de monetización completo
 - `docs/AUDIT_SUBSCRIPTION.md` - Auditoría de seguridad
 - `docs/ANDROID_SETUP.md` - Setup de Android SDK
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- News dated in the future: feeds whose clock is off.
 --
 -- Some feeds publish their LOCAL time but label it as UTC: CNN Turk says

@@ -47,3 +47,7 @@ Para actualizar esta documentación:
 2. Verificar contra código real (`docker exec`, `psql`, logs)
 3. Incluir evidencia (logs, queries, métricas)
 4. Actualizar `06-roadmap.md` si cambia estado
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

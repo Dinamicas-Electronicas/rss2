@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- migrations/add_entity_blocklist.sql
 -- Equivalente de init-db/46-entity-blocklist.sql para bases ya existentes.
 -- Aplicar con:

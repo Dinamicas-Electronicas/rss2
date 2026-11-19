@@ -42,3 +42,7 @@ Aprobados a partir del estado verificado del sistema en `docker-compose.yml`,
 Un cambio está terminado cuando: compila en local y en Docker, `vet` limpio,
 verificado en vivo contra el stack (`docker compose`), y `specs/` actualizado
 si cambia comportamiento, contrato o topología.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

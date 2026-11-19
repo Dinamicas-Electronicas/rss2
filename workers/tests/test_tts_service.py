@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Pruebas de integracion del servicio de TTS.
 
 Cubren los puntos 4, 5, 6 y 8 del plan de aceptacion:

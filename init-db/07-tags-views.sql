@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- init-db/07-tags-views.sql
 -- Vista de Top tags (24h) para el esquema existente:
 --   tags(id, nombre)

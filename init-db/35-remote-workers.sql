@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Tabla de workers remotos
 CREATE TABLE IF NOT EXISTS remote_workers (
     id SERIAL PRIMARY KEY,

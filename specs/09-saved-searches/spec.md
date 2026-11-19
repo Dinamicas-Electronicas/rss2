@@ -143,3 +143,7 @@ Cuando se accede a `GET /api/lists/:id/related`:
 - [x] Aprobada
 - [x] Implementada
 - [x] Verificada
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

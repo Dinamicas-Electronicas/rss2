@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Entity Co-occurrences Table
 -- Pre-computed entity co-occurrences for graph visualization
 -- This table is updated periodically by a background job, not in real-time

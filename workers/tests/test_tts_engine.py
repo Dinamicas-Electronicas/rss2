@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Pruebas del contrato de motor de voz.
 
 No se descarga ningun modelo: el motor real se sustituye por un doble de

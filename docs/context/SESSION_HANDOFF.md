@@ -305,3 +305,7 @@ traducción** y el **factor de tiempo real del TTS**: son los dos números que m
 6. Al terminar: actualizar `KNOWN_ISSUES.md` (estado real), `DECISIONS.md` (si hay decisión nueva) y
    este `SESSION_HANDOFF.md`.
 7. No reescribir la documentación entera: actualizar sólo lo necesario.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -191,3 +191,7 @@ El script automáticamente:
 1. Hace `git pull` para obtener el código actualizado
 2. Reconstruye la imagen Docker
 3. Reinicia el contenedor con la nueva versión
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

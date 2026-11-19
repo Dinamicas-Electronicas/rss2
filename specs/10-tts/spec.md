@@ -372,3 +372,7 @@ checkpoints de OpenVoice) y dejar constancia en `specs/`.
   varias voces y textos de noticias reales.
 - Posible répartition de carga entre varios workers si el volumen lo exige
   (hoy `TTS_ENGINE_CLASSES` fija un solo motor por proceso).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

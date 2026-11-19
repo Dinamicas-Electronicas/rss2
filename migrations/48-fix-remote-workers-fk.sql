@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Migration: Fix remote_workers foreign key constraint
 -- Allow deleting workers that have associated translations by setting worker_id to NULL
 -- This fixes the "Failed to delete worker" error when trying to remove disabled workers

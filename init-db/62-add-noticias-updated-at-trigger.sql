@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Trigger de updated_at en 'noticias'.
 --
 -- La funcion update_updated_at_column() ya se creaba en la migracion 53

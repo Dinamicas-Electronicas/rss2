@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Voces: registro de perfiles de timbre y control de calidad de las muestras.
 
 El servicio ofrece dos familias de voces:

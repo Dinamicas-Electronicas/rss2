@@ -1,4 +1,8 @@
 #!/bin/bash
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # ==============================================================================
 # Pre-deployment model preparation for translator-gpu
 # Ensures the NLLB-1.3B model is properly converted before starting workers

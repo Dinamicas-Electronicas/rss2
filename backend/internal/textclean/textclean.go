@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 // Package textclean normaliza y sanea el texto que llega de feeds RSS y del
 // scraping de páginas web antes de guardarlo en la base de datos.
 //

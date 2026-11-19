@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Índices para el pipeline de traducción (scheduler -> translator)
 --
 -- El scheduler busca "noticias nuevas que aún no tienen job de traducción".

@@ -584,3 +584,7 @@ manifiesto de offsets).
 | El audio tarda minutos | En CPU el modelo va mucho más lento que tiempo real. | Normal y esperado; usar la cola, peticiones síncronas no. |
 | El contenedor se reinicia solo al arrancar | Se supera el límite de RAM (Chatterbox ~2 GB cargado). | Subir `memory` del servicio `tts` en `docker-compose.yml`. |
 | `no such table tts_jobs` | Falta la migración. | `docker compose exec -T db psql -U rss -d rss < migrations/add_tts.sql` |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

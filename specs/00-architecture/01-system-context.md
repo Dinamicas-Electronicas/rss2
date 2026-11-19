@@ -63,3 +63,7 @@ Agregador multilingüe de noticias RSS que ingiere feeds, detecta idioma, traduc
 - 6822 feeds RSS configurados
 - 1460 feeds activos
 - 20 workers de ingestión, polling cada 8 minutos
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

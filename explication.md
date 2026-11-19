@@ -558,3 +558,7 @@ docker exec rss2_backend backup_news_zipped
 | 8080 | backend API | Solo interno (via nginx) |
 
 No hay puertos exposés directos a servicios externos (Twitter, etc.) - todas las conexiones son entrantes o hacia APIs externas vía workers.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

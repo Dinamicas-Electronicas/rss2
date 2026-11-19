@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 CREATE TABLE IF NOT EXISTS continentes (id SERIAL PRIMARY KEY, nombre VARCHAR(50) NOT NULL UNIQUE);
 CREATE TABLE IF NOT EXISTS categorias (id SERIAL PRIMARY KEY, nombre VARCHAR(100) NOT NULL UNIQUE);
 CREATE TABLE IF NOT EXISTS paises (id SERIAL PRIMARY KEY, nombre VARCHAR(100) NOT NULL UNIQUE, continente_id INTEGER REFERENCES continentes(id) ON DELETE SET NULL);

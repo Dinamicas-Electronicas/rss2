@@ -1,4 +1,8 @@
 #!/bin/bash
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Aliases y funciones para despliegue automático de RSS2
 # Copia este archivo y ejecútalo: source alias.sh
 

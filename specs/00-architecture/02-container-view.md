@@ -113,3 +113,7 @@ REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
 ## Healthchecks
 
 Todos los workers verifican con: `grep -q <nombre> /proc/1/cmdline`
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -116,3 +116,7 @@ Reducir MAX_SEQ_PER_CALL en docker-compose.yml:
 environment:
   MAX_SEQ_PER_CALL: 16  # en vez de 32
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -62,3 +62,7 @@ El cache se invalida cuando los datos subyacentes cambian:
 2. **Serialización JSON**: `cache.Set` serializa structs a JSON.
 3. **Best-effort**: Si Redis falla, el sistema sigue funcionando (cache opcional).
 4. **Translation cache**: El translator worker usa cache Redis con formato `tr:{lang_from}:{lang_to}:{md5}`, TTL 30 días (ver spec 03).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

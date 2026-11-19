@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Limpieza de noticias duplicadas.
 --
 -- El ingestor deriva el id de la URL normalizada (sin esquema, sin www, sin

@@ -182,3 +182,7 @@ docker exec rss2_db psql -U rss -d rss -c "SELECT COUNT(*) FROM entity_cooccurre
 3. **Añadir paginación** a endpoint de noticias
 4. **Testing de responsive** en tablet/móvil
 5. **Optimizar queries** de tendencias si hay lentitud
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

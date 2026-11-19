@@ -276,3 +276,7 @@ Documentos preexistentes **fuera** de esta carpeta (no duplicados aquí):
 6. Al terminar: actualizar el documento afectado, `KNOWN_ISSUES.md` y `SESSION_HANDOFF.md`.
 7. No reescribir la documentación entera: **actualizar sólo lo necesario** y conservar el historial.
 8. La documentación **no** sustituye al código como fuente de verdad.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

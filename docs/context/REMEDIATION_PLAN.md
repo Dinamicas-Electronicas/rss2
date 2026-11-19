@@ -652,3 +652,7 @@ cd backend && go test -count=1 ./...
 - `ARCHITECTURE.md` §9.6 — puntos de extensión del TTS (para W8).
 - `AGENTS.md` — quirks operativos que **no** se deben romper.
 - `SESSION_HANDOFF.md` — estado de la última sesión.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

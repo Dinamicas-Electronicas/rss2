@@ -1,6 +1,10 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # RSS2 Workers Makefile
 
-.PHONY: all build clean deps ingestor scraper discovery topics related server test parity sanitize sanitize-dry-run sanitize-restore sanitize-local entities-scan entities-scan-apply entities-scan-local alerts-prune alerts-prune-apply alerts-prune-local dedupe-noticias event-clustering tts-models tts-test-db tts-test tts-test-local
+.PHONY: all build clean deps ingestor scraper discovery topics related server test parity headers headers-check sanitize sanitize-dry-run sanitize-restore sanitize-local entities-scan entities-scan-apply entities-scan-local alerts-prune alerts-prune-apply alerts-prune-local dedupe-noticias event-clustering tts-models tts-test-db tts-test tts-test-local
 
 # Binary output directory
 BIN_DIR := bin
@@ -80,6 +84,13 @@ frontend-deps:
 parity:
 	diff -r backend/internal/textclean rss-ingestor-go/textclean
 	@echo "textclean: ambas copias idénticas"
+
+# Autoría: cabecera de Dinámicas Electrónicas en todos los ficheros
+headers:
+	python3 scripts/authorship_headers.py apply
+
+headers-check:
+	python3 scripts/authorship_headers.py check
 
 # Backfill de limpieza (HTML y ruido) sobre las noticias ya existentes.
 # Se ejecuta en el contenedor backend (tiene la BD y el binario /sanitize):

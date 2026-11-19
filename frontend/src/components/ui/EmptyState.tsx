@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { Search, Rss, Globe, AlertTriangle, Inbox } from 'lucide-react'
 
 interface EmptyStateProps {

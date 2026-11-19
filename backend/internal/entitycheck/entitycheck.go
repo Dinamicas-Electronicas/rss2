@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 // Package entitycheck clasifica los valores de `tags` (entidades y temas)
 // detectando falsos positivos del NER: basura de página (horas, marcadores,
 // fechas, urls), fragmentos de titular cortados, palabras genéricas y

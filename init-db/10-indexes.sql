@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Optimización de índices
 CREATE INDEX IF NOT EXISTS idx_noticias_pais ON noticias(pais_id);
 CREATE INDEX IF NOT EXISTS idx_noticias_categoria ON noticias(categoria_id);

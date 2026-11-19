@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Tabla de idiomas disponibles para traducción
 CREATE TABLE IF NOT EXISTS idiomas_disponibles (
     codigo CHAR(5) PRIMARY KEY,

@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { useState, useEffect } from 'react'
 import { News } from '../services/api'
 import { Heart, Trash2, ExternalLink, Calendar, Newspaper, Search, Play, Edit2, Check, X, FolderPlus, Folder, Plus, Minus, Globe, Lightbulb, Sparkles, Clock, LayoutGrid } from 'lucide-react'

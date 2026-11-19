@@ -80,3 +80,7 @@ DROP FUNCTION IF EXISTS find_related_translations;
 
 -- Restaurar código anterior del related worker si es necesario
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

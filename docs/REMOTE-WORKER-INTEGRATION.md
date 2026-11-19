@@ -580,3 +580,7 @@ curl -I https://tu-servidor.com/ws/worker
 6. [ ] Verificar conexión y primeras traducciones
 7. [ ] Configurar monitoreo/alerting
 8. [ ] Documentar workers activos en runbook
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

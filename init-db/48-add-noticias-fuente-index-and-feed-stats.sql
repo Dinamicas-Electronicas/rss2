@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Optimización de consultas de feeds
 -- 1. Índice en fuente_nombre para acelerar el COUNT(*) en GetFeeds
 CREATE INDEX IF NOT EXISTS idx_noticias_fuente_nombre ON noticias(fuente_nombre);

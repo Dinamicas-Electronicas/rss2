@@ -179,3 +179,7 @@ Decisiones aún abiertas (DECISIONS.md Parte C):
 - `KNOWN_ISSUES.md` — las 26 incidencias con evidencia.
 - `DECISIONS.md` — decisiones verificadas (A) y recomendaciones (B), y las preguntas abiertas (C).
 - `PROJECT_CONTEXT.md` — el mapa general.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

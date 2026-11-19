@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Interfaz de motor de voz.
 
 RSS2 no habla con un motor concreto: habla con esta interfaz. Anadir un motor

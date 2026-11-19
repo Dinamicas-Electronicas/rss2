@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Re-siembra de los apellidos de las personaspoliticas.
 --
 -- La migracion 44 inserta estos apellidos con tipo='persona'. Solo se

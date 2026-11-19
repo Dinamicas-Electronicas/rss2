@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Embeddings del TEXTO ORIGINAL de noticias que ya estan en el idioma destino.
 --
 -- Las noticias de los canales marcados como 'traducido' (y las que langdetect

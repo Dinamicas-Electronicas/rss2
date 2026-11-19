@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Configuracion comun de las pruebas del subsistema TTS.
 
 Las pruebas unitarias no descargan pesos ni arrancan el motor: todo lo que

@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Add feed health monitoring columns to fuentes_url table
 -- Migration: 54-add-feed-health-monitoring.sql
 -- Purpose: Track feed health status for automatic deactivation and reactivation

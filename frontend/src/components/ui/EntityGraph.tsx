@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, ZoomIn, ZoomOut, Maximize2, RefreshCw, Network, Search, Loader2 } from 'lucide-react'
 

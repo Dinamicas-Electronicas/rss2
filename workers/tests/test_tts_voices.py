@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 """Pruebas del registro de voces y del control de calidad de las muestras.
 
 Incluye la proteccion del almacenamiento (9): ninguna operacion puede salir

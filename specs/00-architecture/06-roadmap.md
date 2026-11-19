@@ -140,3 +140,7 @@ tags:              ~31,000
 | Alertas/día | 169 | <25 |
 | Chrome residual | 930 | 0 |
 | Feeds activos | 1,460 | >2,000 |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

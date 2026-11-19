@@ -670,3 +670,7 @@ traducido**, y nada se archiva antes de tiempo.
 - `REMEDIATION_PLAN.md` — plan de corrección secuenciado.
 - `docs/TTS.md` — manual de operación del TTS (existente, no duplicado aquí).
 - `AGENTS.md` — constitución del proyecto y quirks operativos (existente, autoritativo).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

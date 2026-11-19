@@ -688,3 +688,7 @@ ingestor. Las noticias creadas por el scraper pueden duplicar las del ingestor o
 | ISS-018 … ISS-026 | 🟢 | Bajo | — |
 
 > El plan de corrección secuenciado está en `REMEDIATION_PLAN.md`.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

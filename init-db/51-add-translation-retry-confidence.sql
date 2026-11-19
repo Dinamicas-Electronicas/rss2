@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Add retry_count and confidence columns to traducciones for improved error handling
 
 ALTER TABLE traducciones ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;

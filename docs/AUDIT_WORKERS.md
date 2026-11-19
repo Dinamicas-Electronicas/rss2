@@ -157,3 +157,7 @@ docs/AUDIT_WORKERS.md                  - Este documento
 ---
 
 *Documento actualizado: 2026-10-12*
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

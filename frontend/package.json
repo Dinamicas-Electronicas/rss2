@@ -2,6 +2,14 @@
   "name": "rss2-frontend",
   "private": true,
   "version": "1.0.0",
+  "description": "RSS2 — Agregador multilingüe de noticias RSS",
+  "author": "Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/Dinamicas-Electronicas/rss2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dinamicas-Electronicas/rss2.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

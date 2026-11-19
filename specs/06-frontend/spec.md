@@ -94,3 +94,7 @@ La UI usa **fallback automático**: si existe traducción, la muestra; si no, mu
   funciona contra `GET/PUT/DELETE /admin/aliases/:id` reales.
 - [x] `ErrorBoundary` (`components/ErrorBoundary.tsx`) envolviendo `Routes`
   en `App.tsx` (2026-09-14).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

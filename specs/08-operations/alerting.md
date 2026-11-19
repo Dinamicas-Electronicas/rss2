@@ -110,3 +110,7 @@ AND n.fecha < NOW() - INTERVAL '7 days';
 1. Verificar translator workers: `docker compose ps translator`
 2. Verificar memoria: `docker stats`
 3. Restart translators si necesario: `docker compose restart translator translator-2`
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

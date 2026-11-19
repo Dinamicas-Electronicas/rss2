@@ -57,3 +57,7 @@ Decisiones tomadas (ya no bloquean):
   `embeddings` activo; `related` 6000+ filas; `qdrant-worker` subiendo).
 - [x] Decisión `fuentes_url`: activos sin semillas (scraper enriquece,
   discovery en espera); sembrar es operativo.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

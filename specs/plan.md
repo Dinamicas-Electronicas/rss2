@@ -36,3 +36,7 @@ fase está marcado [x] en los specs 01–08.
 
 - Sembrar `fuentes_url` si se quiere discovery con trabajo.
 - Vigilar disco (`backups/` crece ~0.9G/día) y backlog de traducción CPU.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

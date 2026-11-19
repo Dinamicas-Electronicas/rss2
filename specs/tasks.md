@@ -127,3 +127,7 @@ Estado global. El detalle y la evidencia están en cada `specs/NN-*/spec.md`.
 - [x] **Fix nginx 502** (2026-10-04): nginx añadido a red `backend` para
       conectar correctamente con el API gateway.
 - [ ] Backup pre-rotación (sigue manual).
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

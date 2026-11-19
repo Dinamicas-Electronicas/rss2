@@ -84,3 +84,7 @@ remote_workers (id, hostname, status, last_seen, api_key)
 2. **Idempotencia**: URLs únicas en `noticias` y `feeds` con `UNIQUE`.
 3. **Full-text search**: `tsv` y `search_vector_es` son tsvector columns con GIN index.
 4. **Lang detection**: `noticias.lang` se detecta con langdetect; valores inválidos se filtran.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

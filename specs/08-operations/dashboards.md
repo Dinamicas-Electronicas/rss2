@@ -118,3 +118,7 @@ El endpoint `GET /api/stats` retorna:
   "translation_stats_5d": [...]
 }
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

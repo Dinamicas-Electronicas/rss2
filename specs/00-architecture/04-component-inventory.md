@@ -186,3 +186,7 @@ Swagger disponible en `/swagger/index.html` (gin-swagger)
 | nllb-200-distilled-600M | /models/nllb-ct2 | ~1GB | Traducción |
 | es_core_news_lg | spaCy download | ~500MB | NER |
 | paraphrase-multilingual-MiniLM-L12-v2 | hf_cache | ~500MB | Embeddings |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

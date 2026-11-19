@@ -806,3 +806,7 @@ falso.
 | A-28 voces estándar y clonadas | `workers/tts/voices.py`, `workers/tts/engine.py:761-831` |
 | A-29 presupuesto de tokens ajustado | `translator/workers/ctranslator_worker.py:43-46` |
 | A-30 evaluación sobre el corpus real | `[DB]` métricas de longitud y duplicados |
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

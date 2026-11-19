@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Imagen de pruebas del subsistema TTS.
 #
 # Extiende la imagen del servicio (que ya trae soundfile, librosa, flask,

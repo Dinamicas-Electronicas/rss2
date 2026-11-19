@@ -367,3 +367,7 @@ El servidor backend está **corriendo con la versión corregida** después de la
 
 *Documento generado: 2026-10-12*
 *Versión: 1.1*
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

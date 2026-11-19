@@ -1,3 +1,7 @@
+// RSS2 — Agregador multilingüe de noticias RSS
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+
 // Command entityscan recorre TODOS los valores de `tags` (todos los países y
 // tipos) y los clasifica con `entitycheck` para detectar falsos positivos del
 // NER.

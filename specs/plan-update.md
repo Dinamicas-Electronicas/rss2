@@ -926,3 +926,7 @@ Un fase está completa cuando:
 - [x] Nube de tags visible en vista de lista
 - [x] Sidebar de sugerencias en homepage
 - [x] Eliminar feeds inactivos por país funcional
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

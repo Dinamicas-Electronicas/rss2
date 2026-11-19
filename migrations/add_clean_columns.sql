@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- migrations/add_clean_columns.sql
 -- Equivalente de init-db/45-limpieza-textos.sql para bases ya existentes.
 -- Aplicar con:  docker compose exec -T db psql -U rss -d rss < migrations/add_clean_columns.sql

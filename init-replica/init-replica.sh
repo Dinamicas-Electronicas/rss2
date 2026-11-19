@@ -1,4 +1,8 @@
 #!/bin/bash
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Initialization script for PostgreSQL streaming replica
 # This script sets up the replica from the primary using pg_basebackup
 

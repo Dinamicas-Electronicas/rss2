@@ -225,3 +225,7 @@ feeds.POST("", middleware.AuthRequired(), PlanLimitMiddleware("create_feed"), ha
 2. **Fix inmediato:** Corregir queries de conteo de traducciones
 3. **Sprint 1:** Rate limiting + middleware de límites
 4. **Sprint 2:** Logging de auditoría + tests
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

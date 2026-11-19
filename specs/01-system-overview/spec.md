@@ -96,3 +96,7 @@ Verificar con `SELECT COUNT(*) FROM tabla` para valores actuales.
 3. `?semantic=true` requiere Ollama (quitado del compose a petición).
 4. `fuentes_url` vacía → scraper/discovery sin trabajo hasta sembrar URLs.
 5. `translator-gpu` solo con hardware NVIDIA + profile `gpu`.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

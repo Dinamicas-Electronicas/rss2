@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- =============================================================================
 -- RSS2 - Script de inicialización completa de base de datos
 -- Este script crea todas las tablas y columnas necesarias para el sistema

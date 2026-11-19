@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 CREATE TABLE IF NOT EXISTS traducciones (
   id SERIAL PRIMARY KEY,
   noticia_id VARCHAR(32) REFERENCES noticias(id) ON DELETE CASCADE,

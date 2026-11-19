@@ -1,10 +1,35 @@
 # 🌐 RSS2 — Agregador Multilingüe de Noticias RSS
 
-> **Tu窗口 al mundo**: Noticias de miles de fuentes internacionales, traducidas automáticamente al español.
+> **Tu ventana al mundo**: noticias de miles de fuentes internacionales,
+> traducidas automáticamente al español.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Go](https://img.shields.io/badge/Go-1.23+-00ADD8.svg)](https://golang.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-336791.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg)](https://docs.docker.com/compose/)
+[![Tests](https://github.com/Dinamicas-Electronicas/rss2/actions/workflows/ci.yml/badge.svg)](https://github.com/Dinamicas-Electronicas/rss2/actions/workflows/ci.yml)
+
+**Desarrollado por [Dinámicas Electrónicas](mailto:dinamicas.electronicas@gmail.com)** ·
+[Repositorio](https://github.com/Dinamicas-Electronicas/rss2) ·
+[Licencia MIT](./LICENSE)
+
+---
+
+## 📑 Índice
+
+- [Qué es RSS2](#-qué-es-rss2)
+- [Inicio rápido](#-inicio-rápido)
+- [Arquitectura](#️-arquitectura)
+- [Pipeline de datos](#-pipeline-de-datos)
+- [Endpoints principales](#-endpoints-principales)
+- [Noticiario por voz (TTS)](#️-noticiario-por-voz-tts)
+- [Comandos de desarrollo](#️-comandos-de-desarrollo)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Configuración](#-configuración)
+- [Solución de problemas](#-solución-de-problemas)
+- [Autoría](#-autoría)
+- [Licencia](#-licencia)
 
 ---
 
@@ -38,7 +63,8 @@ Todo en un **único puerto**: `:8888`
 
 ```bash
 # 1. Clonar el repositorio
-git clone <repo-url> && cd rss2
+git clone https://github.com/Dinamicas-Electronicas/rss2.git
+cd rss2
 
 # 2. Copiar y configurar variables de entorno
 cp .env.example .env
@@ -703,9 +729,44 @@ docker exec rss2_db psql -U rss -d rss -c \
 
 ---
 
+## 👤 Autoría
+
+**RSS2** es un proyecto de **[Dinámicas Electrónicas](mailto:dinamicas.electronicas@gmail.com)**.
+
+| | |
+|---|---|
+| **Titular** | Dinámicas Electrónicas |
+| **Contacto** | [dinamicas.electronicas@gmail.com](mailto:dinamicas.electronicas@gmail.com) |
+| **GitHub** | [@Dinamicas-Electronicas](https://github.com/Dinamicas-Electronicas) |
+| **Repositorio** | [github.com/Dinamicas-Electronicas/rss2](https://github.com/Dinamicas-Electronicas/rss2) |
+
+Todos los archivos del repositorio llevan la cabecera de autoría:
+
+```go
+// Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+// SPDX-License-Identifier: MIT
+```
+
+Al añadir archivos nuevos:
+
+```bash
+make headers        # Añade la cabecera a los archivos que no la tengan
+make headers-check  # Falla si algún archivo no lleva la cabecera
+```
+
+Las licencias de las dependencias y de los pesos de los modelos están en
+[NOTICE](./NOTICE).
+
+---
+
 ## 📜 Licencia
 
-MIT License — ver [LICENSE](./LICENSE) para detalles.
+Código bajo **MIT** — © 2026 **Dinámicas Electrónicas**.
+Ver [LICENSE](./LICENSE) para el texto completo.
+
+> ⚠️ La licencia MIT cubre solo el código propio. Los pesos de **NLLB-200**
+> son **CC-BY-NC 4.0** (uso no comercial); el resto de dependencias mantienen
+> sus licencias. Detalle en [NOTICE](./NOTICE).
 
 ---
 
@@ -731,5 +792,10 @@ MIT License — ver [LICENSE](./LICENSE) para detalles.
 ---
 
 <p align="center">
-  <strong>RSS2</strong> — Tu ventana al mundo · Hecho con ❤️ y Go
+  <strong>RSS2</strong> — Tu ventana al mundo · Hecho con ❤️ y Go<br />
+  © 2026 <a href="mailto:dinamicas.electronicas@gmail.com">Dinámicas Electrónicas</a> · Licencia MIT
 </p>
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

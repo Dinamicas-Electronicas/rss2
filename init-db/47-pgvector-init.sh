@@ -1,4 +1,8 @@
 #!/bin/bash
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Crea la extension pgvector en la base de datos.
 #
 # IMPORTANTE: este script NO debe volver a aplicar los ficheros .sql. El

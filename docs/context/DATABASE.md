@@ -426,3 +426,7 @@ sin que ninguna consulta mejore (el histórico no se consulta: el `desde` por de
 > Las migraciones añadidas después nunca se aplican solas. Antes de reconstruir cualquier imagen hay
 > que comprobar que faltan columnas/tablas (p. ej. `traducciones.confidence` / `retry_count` de la
 > migración 51 ya faltaron una vez). `[DOC: AGENTS.md]`
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

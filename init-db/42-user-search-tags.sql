@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Dynamic search tags per user (additive, no data loss)
 CREATE TABLE IF NOT EXISTS user_search_tags (
     id SERIAL PRIMARY KEY,

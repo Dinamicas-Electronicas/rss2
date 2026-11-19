@@ -1,3 +1,7 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Override local: permite acceder a Grafana en http://localhost:3001
 # La red monitoring es internal:true y compose descarta los puertos de servicios
 # que solo están en redes internas. Añadir la red frontend (no internal) permite

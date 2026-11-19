@@ -175,3 +175,7 @@ When docs conflict with code or config, trust in this order:
 ## Remote Workers
 
 Remote translation workers connect via WebSocket to `backend:8080/ws/worker` using an API key from the `remote_workers` table. See `remote-worker/README.md` for deployment details.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

@@ -291,3 +291,7 @@ cooldown requieren código.
   tiene wiki); `Alertas.tsx` muestra thumbnail + snippet + `WikiTooltip`
   (mismo componente que Populares). Imagen servida 200 en
   `/api/wiki-images/*`.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

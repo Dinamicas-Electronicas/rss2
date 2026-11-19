@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- init-db/06-tags.sql (compatible with existing schema from 00-complete-schema.sql)
 
 -- Tabla de tags ya existe en 00-complete-schema.sql con columnas 'valor' y 'tipo'

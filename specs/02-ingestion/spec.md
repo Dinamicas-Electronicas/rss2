@@ -136,3 +136,7 @@ make sanitize-restore                                             # vuelta atrá
       escribe limpio), 0 filas con `resumen`/`titulo` >4.000 car. y la API
       devuelve 0/100 resúmenes con etiquetas o código. Reversible con
       `make sanitize-restore`.
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

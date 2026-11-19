@@ -52,3 +52,7 @@ getPendingTags() → processTag() → fetchWikipediaInfo()
               (retry next       SET wiki_checked=TRUE
                cycle)           (permanent failure)
 ```
+
+---
+
+© 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

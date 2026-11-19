@@ -1,3 +1,7 @@
+-- RSS2 — Agregador multilingüe de noticias RSS
+-- Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+-- SPDX-License-Identifier: MIT
+
 -- Seed common political last names (figuras públicas conocidas)
 -- These will be inserted as tags with tipo='persona' and their apellido set
 -- Note: These are just initial entries; more will be added dynamically as entities are processed
