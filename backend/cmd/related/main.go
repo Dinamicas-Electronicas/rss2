@@ -364,7 +364,7 @@ func Main() {
 		os.Exit(0)
 	}()
 
-	logger.Info().Msgf("Config: sleep=%ds, topK=%d, batch=%d, model=%s, minScore=%.2f", 
+	logger.Info().Msgf("Config: sleep=%ds, topK=%d, batch=%d, model=%s, minScore=%.2f",
 		sleepSec, topK, batchSz, model, minScore)
 
 	for {

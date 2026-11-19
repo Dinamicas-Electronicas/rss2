@@ -9,21 +9,21 @@ import (
 )
 
 type News struct {
-	ID          string     `json:"id"`  // VARCHAR(32) en BD
-	Titulo      string     `json:"titulo"`
-	Resumen     string     `json:"resumen"`
-	Contenido   string     `json:"contenido"`
-	URL         string     `json:"url"`
-	ImagenURL   *string    `json:"imagen_url"`
-	Fecha       *time.Time `json:"fecha"`
-	Lang        string     `json:"lang"`
-	FeedID      int64      `json:"feed_id"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID        string     `json:"id"` // VARCHAR(32) en BD
+	Titulo    string     `json:"titulo"`
+	Resumen   string     `json:"resumen"`
+	Contenido string     `json:"contenido"`
+	URL       string     `json:"url"`
+	ImagenURL *string    `json:"imagen_url"`
+	Fecha     *time.Time `json:"fecha"`
+	Lang      string     `json:"lang"`
+	FeedID    int64      `json:"feed_id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 type NewsWithTranslations struct {
-	ID                string     `json:"id"`
+	ID                string    `json:"id"`
 	Titulo            string    `json:"titulo"`
 	Resumen           string    `json:"resumen"`
 	Contenido         string    `json:"contenido"`
@@ -46,14 +46,14 @@ type NewsWithTranslations struct {
 }
 
 type Entity struct {
-	Valor           string     `json:"valor"`
-	Tipo            string     `json:"tipo"`
-	Apellido        *string    `json:"apellido,omitempty"`
-	Count           int        `json:"count"`
-	WikiSummary     *string    `json:"wiki_summary"`
-	WikiURL         *string    `json:"wiki_url"`
-	ImagePath       *string    `json:"image_path"`
-	LastDate        *time.Time `json:"last_date,omitempty"`
+	Valor       string     `json:"valor"`
+	Tipo        string     `json:"tipo"`
+	Apellido    *string    `json:"apellido,omitempty"`
+	Count       int        `json:"count"`
+	WikiSummary *string    `json:"wiki_summary"`
+	WikiURL     *string    `json:"wiki_url"`
+	ImagePath   *string    `json:"image_path"`
+	LastDate    *time.Time `json:"last_date,omitempty"`
 }
 
 type EntityListResponse struct {
@@ -151,27 +151,27 @@ type Translation struct {
 }
 
 type User struct {
-	ID                  int64     `json:"id"`
-	Email               string    `json:"email"`
-	Username            string    `json:"username"`
-	PasswordHash        string    `json:"-"`
-	IsAdmin             bool      `json:"is_admin"`
-	Role                string    `json:"role"`
-	Plan                string    `json:"plan"`
-	SubscriptionStatus  string    `json:"subscription_status"`
+	ID                  int64      `json:"id"`
+	Email               string     `json:"email"`
+	Username            string     `json:"username"`
+	PasswordHash        string     `json:"-"`
+	IsAdmin             bool       `json:"is_admin"`
+	Role                string     `json:"role"`
+	Plan                string     `json:"plan"`
+	SubscriptionStatus  string     `json:"subscription_status"`
 	SubscriptionEnd     *time.Time `json:"subscription_end,omitempty"`
-	GooglePlayToken     string    `json:"-"`
-	GooglePlayProductID string    `json:"google_play_product_id,omitempty"`
+	GooglePlayToken     string     `json:"-"`
+	GooglePlayProductID string     `json:"google_play_product_id,omitempty"`
 	Limits              UserLimits `json:"limits"`
-	CreatedAt           time.Time `json:"created_at"`
-	UpdatedAt           time.Time `json:"updated_at"`
+	CreatedAt           time.Time  `json:"created_at"`
+	UpdatedAt           time.Time  `json:"updated_at"`
 }
 
 type UserLimits struct {
-	Feeds            int  `json:"feeds"`
+	Feeds              int  `json:"feeds"`
 	TranslationsPerDay int  `json:"translations_per_day"`
-	SearchEnabled    bool `json:"search_enabled"`
-	AlertsLimit      int  `json:"alerts_limit"`
+	SearchEnabled      bool `json:"search_enabled"`
+	AlertsLimit        int  `json:"alerts_limit"`
 }
 
 type SearchHistory struct {
@@ -201,27 +201,27 @@ type FeedListResponse struct {
 }
 
 type Stats struct {
-	TotalNews           int64          `json:"total_news"`
-	TotalFeeds          int64          `json:"total_feeds"`
-	TotalUsers          int64          `json:"total_users"`
-	TotalTranslated     int64          `json:"total_translated"`
-	NewsToday           int64          `json:"news_today"`
-	NewsThisWeek        int64          `json:"news_this_week"`
-	NewsThisMonth       int64          `json:"news_this_month"`
-	TopCategories       []CategoryStat `json:"top_categories"`
-	TopCountries        []CountryStat  `json:"top_countries"`
-	TopLanguages        []LanguageStat `json:"top_languages"`
+	TotalNews       int64          `json:"total_news"`
+	TotalFeeds      int64          `json:"total_feeds"`
+	TotalUsers      int64          `json:"total_users"`
+	TotalTranslated int64          `json:"total_translated"`
+	NewsToday       int64          `json:"news_today"`
+	NewsThisWeek    int64          `json:"news_this_week"`
+	NewsThisMonth   int64          `json:"news_this_month"`
+	TopCategories   []CategoryStat `json:"top_categories"`
+	TopCountries    []CountryStat  `json:"top_countries"`
+	TopLanguages    []LanguageStat `json:"top_languages"`
 	// Translation breakdown
-	TranslationsPending int64              `json:"translations_pending"`
-	TranslationsDone    int64              `json:"translations_done"`
-	TranslationsError   int64              `json:"translations_error"`
+	TranslationsPending int64 `json:"translations_pending"`
+	TranslationsDone    int64 `json:"translations_done"`
+	TranslationsError   int64 `json:"translations_error"`
 	// Hourly translation metrics
-	TranslationStats12h []HourlyStat     `json:"translation_stats_12h"`
-	TranslationStats24h []HourlyStat     `json:"translation_stats_24h"`
-	TranslationStats2d  []HourlyStat     `json:"translation_stats_2d"`
-	TranslationStats3d  []HourlyStat     `json:"translation_stats_3d"`
-	TranslationStats4d  []HourlyStat     `json:"translation_stats_4d"`
-	TranslationStats5d  []HourlyStat     `json:"translation_stats_5d"`
+	TranslationStats12h []HourlyStat `json:"translation_stats_12h"`
+	TranslationStats24h []HourlyStat `json:"translation_stats_24h"`
+	TranslationStats2d  []HourlyStat `json:"translation_stats_2d"`
+	TranslationStats3d  []HourlyStat `json:"translation_stats_3d"`
+	TranslationStats4d  []HourlyStat `json:"translation_stats_4d"`
+	TranslationStats5d  []HourlyStat `json:"translation_stats_5d"`
 }
 
 type CategoryStat struct {
@@ -231,22 +231,22 @@ type CategoryStat struct {
 }
 
 type CountryStat struct {
-	PaisID      int64  `json:"pais_id"`
-	PaisName    string `json:"pais_nombre"`
-	FlagEmoji   string `json:"flag_emoji"`
-	Count       int64  `json:"count"`
+	PaisID    int64  `json:"pais_id"`
+	PaisName  string `json:"pais_nombre"`
+	FlagEmoji string `json:"flag_emoji"`
+	Count     int64  `json:"count"`
 }
 
 type LanguageStat struct {
-	Lang   string `json:"lang"`
-	Count  int64  `json:"count"`
-	Dias   int64  `json:"dias_activos"`
+	Lang  string `json:"lang"`
+	Count int64  `json:"count"`
+	Dias  int64  `json:"dias_activos"`
 }
 
 type HourlyStat struct {
-	Hour       string `json:"hour"`
-	Total      int64  `json:"total"`
-	Items      int64  `json:"items"`
+	Hour  string `json:"hour"`
+	Total int64  `json:"total"`
+	Items int64  `json:"items"`
 }
 
 type LoginRequest struct {

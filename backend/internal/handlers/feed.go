@@ -322,7 +322,7 @@ func DeleteFeed(c *gin.Context) {
 	cache.InvalidateFeedList(ctx)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":         "Feed deleted successfully",
+		"message":          "Feed deleted successfully",
 		"noticias_deleted": noticias,
 	})
 }
@@ -393,9 +393,9 @@ func BulkDeleteFeeds(c *gin.Context) {
 	if !req.Confirmar {
 		// Se responde con el impacto previsto y NO se borra nada.
 		c.JSON(http.StatusPreconditionRequired, gin.H{
-			"error":            "confirma la operacion",
-			"message":          "Falta 'confirmar': true. Esta operacion borra las fuentes y sus noticias de forma irreversible.",
-			"feeds_affected":   len(feeds),
+			"error":             "confirma la operacion",
+			"message":           "Falta 'confirmar': true. Esta operacion borra las fuentes y sus noticias de forma irreversible.",
+			"feeds_affected":    len(feeds),
 			"noticias_affected": noticias,
 		})
 		return
@@ -445,7 +445,7 @@ func DeleteInactiveFeeds(c *gin.Context) {
 	cache.InvalidateFeedList(ctx)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":        "Inactive feeds deleted",
+		"message":       "Inactive feeds deleted",
 		"deleted_count": result.RowsAffected(),
 	})
 }
@@ -515,8 +515,8 @@ func SetFeedTraducido(c *gin.Context) {
 // forma practica de montar la lista de canales que ya estan en espanol.
 func BulkSetFeedsTraducido(c *gin.Context) {
 	var req struct {
-		IDs        []int64 `json:"ids"`
-		Traducido  bool    `json:"traducido"`
+		IDs       []int64 `json:"ids"`
+		Traducido bool    `json:"traducido"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request", Message: err.Error()})
@@ -892,7 +892,7 @@ func ImportFeeds(c *gin.Context) {
 		"imported": imported,
 		"skipped":  skipped,
 		"failed":   failed,
-		"errors":   errors,  // errors contiene solo códigos, no detalles de BD
+		"errors":   errors, // errors contiene solo códigos, no detalles de BD
 		"message":  fmt.Sprintf("Import completed. Imported: %d, Skipped: %d, Failed: %d", imported, skipped, failed),
 	})
 }

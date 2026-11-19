@@ -128,7 +128,7 @@ func GetSharePreview(c *gin.Context) {
 		TituloTrad      *string
 		ResumenTrad     *string
 		ContenidoTrad   *string
-		PaisNombre     *string
+		PaisNombre      *string
 		CategoriaNombre *string
 	}
 
@@ -1361,10 +1361,10 @@ func RefreshEntityStats(c *gin.Context) {
 	db.GetPool().QueryRow(ctx, "SELECT COUNT(*) FROM entity_stats").Scan(&countAfter)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status":         "success",
-		"count_before":   countBefore,
-		"count_after":    countAfter,
-		"duration_ms":    time.Since(start).Milliseconds(),
+		"status":       "success",
+		"count_before": countBefore,
+		"count_after":  countAfter,
+		"duration_ms":  time.Since(start).Milliseconds(),
 	})
 }
 
@@ -1634,7 +1634,11 @@ func GetEntityGraph(c *gin.Context) {
 
 	// Get entity details
 	var nodesQuery string
-	var nodesRows interface{ Close(); Next() bool; Scan(dst ...any) error }
+	var nodesRows interface {
+		Close()
+		Next() bool
+		Scan(dst ...any) error
+	}
 	var err2 error
 
 	if tipo != "" {

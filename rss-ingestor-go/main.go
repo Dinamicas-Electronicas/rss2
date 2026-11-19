@@ -43,8 +43,8 @@ type Config struct {
 }
 
 var (
-	isRunning   bool
-	runMu       sync.Mutex
+	isRunning bool
+	runMu     sync.Mutex
 )
 
 // Feed represents a row in the feeds table

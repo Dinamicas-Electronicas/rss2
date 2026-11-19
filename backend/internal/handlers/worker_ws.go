@@ -23,12 +23,12 @@ var upgrader = websocket.Upgrader{
 }
 
 type WSWorker struct {
-	conn         *websocket.Conn
-	workerID     int
-	capabilities string
-	workerName   string
+	conn          *websocket.Conn
+	workerID      int
+	capabilities  string
+	workerName    string
 	lastHeartbeat time.Time
-	mu           sync.Mutex
+	mu            sync.Mutex
 }
 
 var (
@@ -69,9 +69,9 @@ func HandleWorkerWS(c *gin.Context) {
 	}
 
 	wsWorker := &WSWorker{
-		conn:         conn,
-		workerID:     workerID,
-		capabilities: capabilities,
+		conn:          conn,
+		workerID:      workerID,
+		capabilities:  capabilities,
 		lastHeartbeat: time.Now(),
 	}
 

@@ -19,7 +19,7 @@ func TestLoadDefaults(t *testing.T) {
 	os.Setenv("SECRET_KEY", "change-this-secret-key")
 
 	cfg := Load()
-	
+
 	if cfg.ServerPort != "8080" {
 		t.Errorf("expected ServerPort '8080', got %s", cfg.ServerPort)
 	}
@@ -57,9 +57,9 @@ func TestLoadFromEnv(t *testing.T) {
 	os.Setenv("RATE_LIMIT_PER_MINUTE", "100")
 	os.Setenv("DOCKER_COMPOSE_DIR", "/custom/path")
 	os.Setenv("WIKI_IMAGES_PATH", "/custom/images")
-	
+
 	cfg := Load()
-	
+
 	if cfg.ServerPort != "9000" {
 		t.Errorf("expected ServerPort '9000', got %s", cfg.ServerPort)
 	}
@@ -93,9 +93,9 @@ func TestLoadInvalidInt(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("SECRET_KEY", "change-this-secret-key")
 	os.Setenv("NEWS_PER_PAGE", "invalid")
-	
+
 	cfg := Load()
-	
+
 	if cfg.NewsPerPage != 30 {
 		t.Errorf("expected default NewsPerPage 30 for invalid value, got %d", cfg.NewsPerPage)
 	}
@@ -105,9 +105,9 @@ func TestLoadInvalidDuration(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("SECRET_KEY", "change-this-secret-key")
 	os.Setenv("JWT_EXPIRATION", "invalid")
-	
+
 	cfg := Load()
-	
+
 	if cfg.JWTExpiration != 24*time.Hour {
 		t.Errorf("expected default JWTExpiration 24h for invalid value, got %v", cfg.JWTExpiration)
 	}
@@ -116,12 +116,12 @@ func TestLoadInvalidDuration(t *testing.T) {
 func TestGetEnv(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("TEST_KEY", "test_value")
-	
+
 	result := getEnv("TEST_KEY", "default")
 	if result != "test_value" {
 		t.Errorf("expected 'test_value', got %s", result)
 	}
-	
+
 	result = getEnv("NON_EXISTENT", "default")
 	if result != "default" {
 		t.Errorf("expected 'default', got %s", result)
@@ -131,12 +131,12 @@ func TestGetEnv(t *testing.T) {
 func TestGetEnvInt(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("TEST_INT", "123")
-	
+
 	result := getEnvInt("TEST_INT", 0)
 	if result != 123 {
 		t.Errorf("expected 123, got %d", result)
 	}
-	
+
 	result = getEnvInt("NON_EXISTENT", 99)
 	if result != 99 {
 		t.Errorf("expected 99, got %d", result)
@@ -146,12 +146,12 @@ func TestGetEnvInt(t *testing.T) {
 func TestGetEnvDuration(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("TEST_DURATION", "1h30m")
-	
+
 	result := getEnvDuration("TEST_DURATION", 0)
 	if result != 90*time.Minute {
 		t.Errorf("expected 90m, got %v", result)
 	}
-	
+
 	result = getEnvDuration("NON_EXISTENT", 5*time.Minute)
 	if result != 5*time.Minute {
 		t.Errorf("expected 5m, got %v", result)

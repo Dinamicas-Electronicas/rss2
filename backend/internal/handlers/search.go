@@ -249,27 +249,27 @@ func SearchNews(c *gin.Context) {
 	// --- Filtros pensados para montar un informativo ----------------------
 	now := time.Now()
 
-// Ventana temporal: desde/hasta.
-//
-// Se acota por arriba porque hay noticias con la fecha corrupta (el corpus
-// tiene unas 400 con fecha en el ano 3000): sin ese tope, "de mas reciente a
-// mas antiguo" las colocaria todas primero y "ultimas 24 h" las traeria
-// todas.
-if desde := c.Query("desde"); desde != "" {
-    if parsed, ok := parseTimeFilter(desde, now); ok {
-        whereClause += " AND n.fecha >= $" + strconv.Itoa(argNum)
-        args = append(args, parsed)
-        argNum++
-    }
-}
-if hasta := c.Query("hasta"); hasta != "" {
-    if parsed, ok := parseTimeFilter(hasta, now); ok {
-        whereClause += " AND n.fecha <= $" + strconv.Itoa(argNum)
-        args = append(args, parsed)
-        argNum++
-    }
-}
-whereClause += " AND (n.fecha IS NULL OR n.fecha <= NOW() + INTERVAL '1 day')"
+	// Ventana temporal: desde/hasta.
+	//
+	// Se acota por arriba porque hay noticias con la fecha corrupta (el corpus
+	// tiene unas 400 con fecha en el ano 3000): sin ese tope, "de mas reciente a
+	// mas antiguo" las colocaria todas primero y "ultimas 24 h" las traeria
+	// todas.
+	if desde := c.Query("desde"); desde != "" {
+		if parsed, ok := parseTimeFilter(desde, now); ok {
+			whereClause += " AND n.fecha >= $" + strconv.Itoa(argNum)
+			args = append(args, parsed)
+			argNum++
+		}
+	}
+	if hasta := c.Query("hasta"); hasta != "" {
+		if parsed, ok := parseTimeFilter(hasta, now); ok {
+			whereClause += " AND n.fecha <= $" + strconv.Itoa(argNum)
+			args = append(args, parsed)
+			argNum++
+		}
+	}
+	whereClause += " AND (n.fecha IS NULL OR n.fecha <= NOW() + INTERVAL '1 day')"
 
 	// Longitud minima del texto: filtra las noticias que no dan para locutar.
 	// Se mide el texto que realmente se locutara (contenido o resumen, en su

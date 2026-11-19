@@ -42,19 +42,19 @@ func GetFavorites(c *gin.Context) {
 	favorites := []map[string]any{}
 	for rows.Next() {
 		var f struct {
-			ID            string
-			Titulo        sql.NullString
-			Resumen       sql.NullString
-			URL           string
-			Fecha         sql.NullTime
-			ImagenURL     sql.NullString
-			CategoriaID   sql.NullInt64
-			PaisID        sql.NullInt64
-			FuenteNombre  sql.NullString
-			TitleTranslated sql.NullString
+			ID                string
+			Titulo            sql.NullString
+			Resumen           sql.NullString
+			URL               string
+			Fecha             sql.NullTime
+			ImagenURL         sql.NullString
+			CategoriaID       sql.NullInt64
+			PaisID            sql.NullInt64
+			FuenteNombre      sql.NullString
+			TitleTranslated   sql.NullString
 			SummaryTranslated sql.NullString
 			ContentTranslated sql.NullString
-			LangTranslated sql.NullString
+			LangTranslated    sql.NullString
 		}
 		if err := rows.Scan(&f.ID, &f.Titulo, &f.Resumen, &f.URL, &f.Fecha, &f.ImagenURL,
 			&f.CategoriaID, &f.PaisID, &f.FuenteNombre, &f.TitleTranslated,
@@ -62,18 +62,18 @@ func GetFavorites(c *gin.Context) {
 			continue
 		}
 		item := map[string]any{
-			"id":            f.ID,
-			"titulo":        f.Titulo.String,
-			"resumen":       f.Resumen.String,
-			"url":           f.URL,
-			"imagen_url":    f.ImagenURL.String,
-			"categoria_id":  f.CategoriaID.Int64,
-			"pais_id":       f.PaisID.Int64,
-			"fuente_nombre": f.FuenteNombre.String,
-			"title_translated": f.TitleTranslated.String,
+			"id":                 f.ID,
+			"titulo":             f.Titulo.String,
+			"resumen":            f.Resumen.String,
+			"url":                f.URL,
+			"imagen_url":         f.ImagenURL.String,
+			"categoria_id":       f.CategoriaID.Int64,
+			"pais_id":            f.PaisID.Int64,
+			"fuente_nombre":      f.FuenteNombre.String,
+			"title_translated":   f.TitleTranslated.String,
 			"summary_translated": f.SummaryTranslated.String,
 			"content_translated": f.ContentTranslated.String,
-			"lang_translated": strings.TrimSpace(f.LangTranslated.String),
+			"lang_translated":    strings.TrimSpace(f.LangTranslated.String),
 		}
 		if f.Fecha.Valid {
 			item["fecha"] = f.Fecha.Time
@@ -341,21 +341,21 @@ func GetListItems(c *gin.Context) {
 	items := []map[string]any{}
 	for rows.Next() {
 		var f struct {
-			ID               string
-			Titulo           sql.NullString
-			Resumen          sql.NullString
-			URL              string
-			Fecha            sql.NullTime
-			ImagenURL        sql.NullString
-			CategoriaID      sql.NullInt64
-			PaisID           sql.NullInt64
-			FuenteNombre     sql.NullString
-			NewsCreatedAt    sql.NullTime
-			TitleTranslated  sql.NullString
+			ID                string
+			Titulo            sql.NullString
+			Resumen           sql.NullString
+			URL               string
+			Fecha             sql.NullTime
+			ImagenURL         sql.NullString
+			CategoriaID       sql.NullInt64
+			PaisID            sql.NullInt64
+			FuenteNombre      sql.NullString
+			NewsCreatedAt     sql.NullTime
+			TitleTranslated   sql.NullString
 			SummaryTranslated sql.NullString
 			ContentTranslated sql.NullString
-			LangTranslated   sql.NullString
-			AddedAt          sql.NullTime
+			LangTranslated    sql.NullString
+			AddedAt           sql.NullTime
 		}
 		if err := rows.Scan(&f.ID, &f.Titulo, &f.Resumen, &f.URL, &f.Fecha, &f.ImagenURL,
 			&f.CategoriaID, &f.PaisID, &f.FuenteNombre, &f.NewsCreatedAt,
@@ -364,18 +364,18 @@ func GetListItems(c *gin.Context) {
 			continue
 		}
 		item := map[string]any{
-			"id":               f.ID,
-			"titulo":           f.Titulo.String,
-			"resumen":          f.Resumen.String,
-			"url":              f.URL,
-			"imagen_url":       f.ImagenURL.String,
-			"categoria_id":     f.CategoriaID.Int64,
-			"pais_id":          f.PaisID.Int64,
-			"fuente_nombre":    f.FuenteNombre.String,
-			"title_translated": f.TitleTranslated.String,
+			"id":                 f.ID,
+			"titulo":             f.Titulo.String,
+			"resumen":            f.Resumen.String,
+			"url":                f.URL,
+			"imagen_url":         f.ImagenURL.String,
+			"categoria_id":       f.CategoriaID.Int64,
+			"pais_id":            f.PaisID.Int64,
+			"fuente_nombre":      f.FuenteNombre.String,
+			"title_translated":   f.TitleTranslated.String,
 			"summary_translated": f.SummaryTranslated.String,
 			"content_translated": f.ContentTranslated.String,
-			"lang_translated":  strings.TrimSpace(f.LangTranslated.String),
+			"lang_translated":    strings.TrimSpace(f.LangTranslated.String),
 		}
 		if f.Fecha.Valid {
 			item["fecha"] = f.Fecha.Time
@@ -476,7 +476,7 @@ func GetListExport(c *gin.Context) {
 
 		// Build the entry
 		sb.WriteString(fmt.Sprintf("📰 %d. %s\n", itemNum, displayTitle))
-		
+
 		metaParts := []string{}
 		if fuenteNombre != "" {
 			metaParts = append(metaParts, fuenteNombre)
@@ -611,11 +611,11 @@ func GetSavedSearches(c *gin.Context) {
 		var params map[string]any
 		json.Unmarshal(paramsJSON, &params)
 		search := map[string]any{
-			"id":         id,
-			"type":       stype,
-			"label":      label,
-			"params":     params,
-			"use_count":  useCount,
+			"id":        id,
+			"type":      stype,
+			"label":     label,
+			"params":    params,
+			"use_count": useCount,
 		}
 		if createdAt.Valid {
 			search["created_at"] = createdAt.Time
@@ -638,8 +638,8 @@ type savedSearchParams struct {
 func CreateSavedSearch(c *gin.Context) {
 	userID := c.GetInt("user_id")
 	var body struct {
-		Type   string `json:"type" binding:"required"`
-		Label  string `json:"label" binding:"required"`
+		Type   string         `json:"type" binding:"required"`
+		Label  string         `json:"label" binding:"required"`
 		Params map[string]any `json:"params" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -905,19 +905,19 @@ func GetListRelatedNews(c *gin.Context) {
 	news := []map[string]any{}
 	for rows.Next() {
 		var f struct {
-			ID               string
-			Titulo           sql.NullString
-			Resumen          sql.NullString
-			URL              string
-			Fecha            sql.NullTime
-			ImagenURL        sql.NullString
-			CategoriaID      sql.NullInt64
-			PaisID           sql.NullInt64
-			FuenteNombre     sql.NullString
-			TitleTranslated  sql.NullString
+			ID                string
+			Titulo            sql.NullString
+			Resumen           sql.NullString
+			URL               string
+			Fecha             sql.NullTime
+			ImagenURL         sql.NullString
+			CategoriaID       sql.NullInt64
+			PaisID            sql.NullInt64
+			FuenteNombre      sql.NullString
+			TitleTranslated   sql.NullString
 			SummaryTranslated sql.NullString
 			ContentTranslated sql.NullString
-			LangTranslated   sql.NullString
+			LangTranslated    sql.NullString
 		}
 		if err := rows.Scan(&f.ID, &f.Titulo, &f.Resumen, &f.URL, &f.Fecha, &f.ImagenURL,
 			&f.CategoriaID, &f.PaisID, &f.FuenteNombre, &f.TitleTranslated,
@@ -925,18 +925,18 @@ func GetListRelatedNews(c *gin.Context) {
 			continue
 		}
 		item := map[string]any{
-			"id":               f.ID,
-			"titulo":           f.Titulo.String,
-			"resumen":          f.Resumen.String,
-			"url":              f.URL,
-			"imagen_url":       f.ImagenURL.String,
-			"categoria_id":     f.CategoriaID.Int64,
-			"pais_id":          f.PaisID.Int64,
-			"fuente_nombre":    f.FuenteNombre.String,
-			"title_translated": f.TitleTranslated.String,
+			"id":                 f.ID,
+			"titulo":             f.Titulo.String,
+			"resumen":            f.Resumen.String,
+			"url":                f.URL,
+			"imagen_url":         f.ImagenURL.String,
+			"categoria_id":       f.CategoriaID.Int64,
+			"pais_id":            f.PaisID.Int64,
+			"fuente_nombre":      f.FuenteNombre.String,
+			"title_translated":   f.TitleTranslated.String,
 			"summary_translated": f.SummaryTranslated.String,
 			"content_translated": f.ContentTranslated.String,
-			"lang_translated":  strings.TrimSpace(f.LangTranslated.String),
+			"lang_translated":    strings.TrimSpace(f.LangTranslated.String),
 		}
 		if f.Fecha.Valid {
 			item["fecha"] = f.Fecha.Time
@@ -945,9 +945,9 @@ func GetListRelatedNews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"news":            news,
-		"keywords":        keywords,
-		"keywords_auto":   true,
+		"news":          news,
+		"keywords":      keywords,
+		"keywords_auto": true,
 	})
 }
 
@@ -1030,19 +1030,19 @@ func GetSuggestedNews(c *gin.Context) {
 	news := []map[string]any{}
 	for listRows.Next() {
 		var f struct {
-			ID               string
-			Titulo           sql.NullString
-			Resumen          sql.NullString
-			URL              string
-			Fecha            sql.NullTime
-			ImagenURL        sql.NullString
-			CategoriaID      sql.NullInt64
-			PaisID           sql.NullInt64
-			FuenteNombre     sql.NullString
-			TitleTranslated  sql.NullString
+			ID                string
+			Titulo            sql.NullString
+			Resumen           sql.NullString
+			URL               string
+			Fecha             sql.NullTime
+			ImagenURL         sql.NullString
+			CategoriaID       sql.NullInt64
+			PaisID            sql.NullInt64
+			FuenteNombre      sql.NullString
+			TitleTranslated   sql.NullString
 			SummaryTranslated sql.NullString
 			ContentTranslated sql.NullString
-			LangTranslated   sql.NullString
+			LangTranslated    sql.NullString
 		}
 		if err := listRows.Scan(&f.ID, &f.Titulo, &f.Resumen, &f.URL, &f.Fecha, &f.ImagenURL,
 			&f.CategoriaID, &f.PaisID, &f.FuenteNombre, &f.TitleTranslated,
@@ -1050,18 +1050,18 @@ func GetSuggestedNews(c *gin.Context) {
 			continue
 		}
 		item := map[string]any{
-			"id":               f.ID,
-			"titulo":           f.Titulo.String,
-			"resumen":          f.Resumen.String,
-			"url":              f.URL,
-			"imagen_url":       f.ImagenURL.String,
-			"categoria_id":     f.CategoriaID.Int64,
-			"pais_id":          f.PaisID.Int64,
-			"fuente_nombre":    f.FuenteNombre.String,
-			"title_translated": f.TitleTranslated.String,
+			"id":                 f.ID,
+			"titulo":             f.Titulo.String,
+			"resumen":            f.Resumen.String,
+			"url":                f.URL,
+			"imagen_url":         f.ImagenURL.String,
+			"categoria_id":       f.CategoriaID.Int64,
+			"pais_id":            f.PaisID.Int64,
+			"fuente_nombre":      f.FuenteNombre.String,
+			"title_translated":   f.TitleTranslated.String,
 			"summary_translated": f.SummaryTranslated.String,
 			"content_translated": f.ContentTranslated.String,
-			"lang_translated":  strings.TrimSpace(f.LangTranslated.String),
+			"lang_translated":    strings.TrimSpace(f.LangTranslated.String),
 		}
 		if f.Fecha.Valid {
 			item["fecha"] = f.Fecha.Time

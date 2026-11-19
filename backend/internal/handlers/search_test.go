@@ -10,12 +10,12 @@ import (
 
 func TestValidatePageParamsSearch(t *testing.T) {
 	tests := []struct {
-		name           string
-		page           int
-		perPage        int
-		defaultPerPage int
-		maxPerPage     int
-		expectedPage   int
+		name            string
+		page            int
+		perPage         int
+		defaultPerPage  int
+		maxPerPage      int
+		expectedPage    int
 		expectedPerPage int
 	}{
 		{"normal", 1, 30, 30, 100, 1, 30},

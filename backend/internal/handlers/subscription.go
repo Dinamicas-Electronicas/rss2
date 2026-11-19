@@ -18,22 +18,22 @@ import (
 // PlanLimits define los límites por cada plan
 var PlanLimits = map[string]models.UserLimits{
 	"free": {
-		Feeds:            5,
+		Feeds:              5,
 		TranslationsPerDay: 0,
-		SearchEnabled:    false,
-		AlertsLimit:      0,
+		SearchEnabled:      false,
+		AlertsLimit:        0,
 	},
 	"pro": {
-		Feeds:            50,
+		Feeds:              50,
 		TranslationsPerDay: 100,
-		SearchEnabled:    true,
-		AlertsLimit:      10,
+		SearchEnabled:      true,
+		AlertsLimit:        10,
 	},
 	"premium": {
-		Feeds:            -1, // ilimitado
+		Feeds:              -1, // ilimitado
 		TranslationsPerDay: -1,
-		SearchEnabled:    true,
-		AlertsLimit:      -1,
+		SearchEnabled:      true,
+		AlertsLimit:        -1,
 	},
 }
 
@@ -97,10 +97,10 @@ func ValidateSubscriptionReceipt(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, SubscriptionResponse{
-		Success:     true,
-		Plan:        plan,
-		Status:      "active",
-		EndsAt:      subscriptionEnd,
+		Success:      true,
+		Plan:         plan,
+		Status:       "active",
+		EndsAt:       subscriptionEnd,
 		NeedsUpgrade: false,
 	})
 }
@@ -197,11 +197,11 @@ func GetSubscriptionStatus(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, SubscriptionResponse{
-		Plan:           user.Plan,
-		Status:         user.SubscriptionStatus,
-		EndsAt:         user.SubscriptionEnd,
-		Limits:         user.Limits,
-		NeedsUpgrade:   user.Plan == "free",
+		Plan:         user.Plan,
+		Status:       user.SubscriptionStatus,
+		EndsAt:       user.SubscriptionEnd,
+		Limits:       user.Limits,
+		NeedsUpgrade: user.Plan == "free",
 	})
 }
 
@@ -247,13 +247,13 @@ func GetUsage(c *gin.Context) {
 	var translationsToday int
 
 	// Feeds - por ahora cuenta todos los feeds activos (no hay user_id en feeds)
-	if err := db.GetPool().QueryRow(c.Request.Context(), 
+	if err := db.GetPool().QueryRow(c.Request.Context(),
 		`SELECT COUNT(*) FROM feeds WHERE activo = true`).Scan(&feedsCount); err != nil {
 		feedsCount = 0
 	}
 
 	// Alertas - no hay columna user_id en alertas
-	if err := db.GetPool().QueryRow(c.Request.Context(), 
+	if err := db.GetPool().QueryRow(c.Request.Context(),
 		`SELECT COUNT(*) FROM alertas WHERE status = 'nueva'`).Scan(&alertsCount); err != nil {
 		alertsCount = 0
 	}
@@ -404,18 +404,18 @@ type SubscriptionRequest struct {
 }
 
 type SubscriptionResponse struct {
-	Success      bool        `json:"success"`
-	Plan         string      `json:"plan,omitempty"`
-	Status       string      `json:"status,omitempty"`
-	EndsAt       *time.Time  `json:"ends_at,omitempty"`
-	Message      string      `json:"message,omitempty"`
+	Success      bool              `json:"success"`
+	Plan         string            `json:"plan,omitempty"`
+	Status       string            `json:"status,omitempty"`
+	EndsAt       *time.Time        `json:"ends_at,omitempty"`
+	Message      string            `json:"message,omitempty"`
 	Limits       models.UserLimits `json:"limits,omitempty"`
-	NeedsUpgrade bool        `json:"needs_upgrade,omitempty"`
+	NeedsUpgrade bool              `json:"needs_upgrade,omitempty"`
 }
 
 type UsageResponse struct {
 	Plan   string            `json:"plan"`
-	Limits models.UserLimits  `json:"limits"`
+	Limits models.UserLimits `json:"limits"`
 	Usage  UsageStats        `json:"usage"`
 }
 

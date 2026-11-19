@@ -32,11 +32,11 @@ var (
 )
 
 type WikiSummary struct {
-	Type        string `json:"type"`
-	Title       string `json:"title"`
+	Type         string `json:"type"`
+	Title        string `json:"title"`
 	DisplayTitle string `json:"displaytitle"`
-	Extract     string `json:"extract"`
-	ContentUrls struct {
+	Extract      string `json:"extract"`
+	ContentUrls  struct {
 		Desktop struct {
 			Page string `json:"page"`
 		} `json:"desktop"`
@@ -315,7 +315,7 @@ func processTag(ctx context.Context, tag Tag) error {
 			strings.Contains(errStr, "503") ||
 			strings.Contains(errStr, "504") ||
 			strings.Contains(errStr, "429")
-		
+
 		if isTransient {
 			logger.Warn().Err(err).Str("valor", tag.Valor).Msg("Error transitorio al consultar Wikipedia, se reintentará")
 			return err // Devolver error para que el caller pueda hacer backoff
@@ -483,14 +483,14 @@ func Main() {
 
 			logger.Info().Msgf("Recuperados %d tags para procesar...", len(tags))
 
-			baseDelay := 1  // segundos base entre requests (más agresivo para Wikipedia)
-			maxDelay := 60   // máximo delay cuando hay errores
+			baseDelay := 1 // segundos base entre requests (más agresivo para Wikipedia)
+			maxDelay := 60 // máximo delay cuando hay errores
 			currentDelay := baseDelay
-		 consecutiveErrors := 0
+			consecutiveErrors := 0
 
 			for _, tag := range tags {
 				err := processTag(ctx, tag)
-				
+
 				// Backoff exponencial: si hay errores transitorios, incrementar delay
 				// Resetear gradualmente cuando hay éxito
 				if err != nil {
@@ -513,7 +513,7 @@ func Main() {
 						}
 					}
 				}
-				
+
 				select {
 				case <-ctx.Done():
 					return

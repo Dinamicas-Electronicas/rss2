@@ -25,11 +25,11 @@ import (
 
 var (
 	dbPool                *pgxpool.Pool
-	sleepSec              = 900  // 15 minutes
+	sleepSec              = 900 // 15 minutes
 	batchSize             = 10
 	maxFailures           = 5
-	reactivationIntervalH  = 24  // hours
-	domainCooldownMinutes = 30  // minutes
+	reactivationIntervalH = 24 // hours
+	domainCooldownMinutes = 30 // minutes
 )
 
 // DomainCircuitBreaker tracks domains that are temporarily down
@@ -78,13 +78,13 @@ func (cb *DomainCircuitBreaker) Cleanup() {
 var circuitBreaker *DomainCircuitBreaker
 
 type URLSource struct {
-	ID           int64
-	Nombre       string
-	URL          string
-	CategoriaID  *int64
-	PaisID       *int64
-	Idioma       *string
-	IsHealthy    bool
+	ID            int64
+	Nombre        string
+	URL           string
+	CategoriaID   *int64
+	PaisID        *int64
+	Idioma        *string
+	IsHealthy     bool
 	FailuresCount int
 }
 
@@ -115,7 +115,7 @@ func ensureSchema(ctx context.Context) error {
 		logger.Error().Err(err).Msg("Failed to create system_state table")
 		return err
 	}
-	
+
 	// Ensure fuentes_url has necessary columns for reactivation
 	alterQueries := []string{
 		`ALTER TABLE fuentes_url ADD COLUMN IF NOT EXISTS failures_count INTEGER DEFAULT 0`,
@@ -128,7 +128,7 @@ func ensureSchema(ctx context.Context) error {
 			// Don't fail on this, columns might already exist
 		}
 	}
-	
+
 	return nil
 }
 
@@ -176,7 +176,7 @@ func getHealthyURLs(ctx context.Context) ([]URLSource, error) {
 // getInactiveURLsForReactivation returns inactive feeds that should be tried for reactivation
 func getInactiveURLsForReactivation(ctx context.Context) ([]URLSource, error) {
 	reactivationBatch := getEnvInt("REACTIVATION_BATCH", 5)
-	
+
 	rows, err := dbPool.Query(ctx, `
 		SELECT id, nombre, url, categoria_id, pais_id, idioma, is_healthy, failures_count
 		FROM fuentes_url
@@ -206,16 +206,16 @@ func shouldCheckReactivation(ctx context.Context) (bool, error) {
 	err := dbPool.QueryRow(ctx, `
 		SELECT last_reactivation_check FROM system_state WHERE id = 1
 	`).Scan(&lastReactivation)
-	
+
 	if err != nil {
 		// Table might not exist or no row, assume we should check
 		return true, nil
 	}
-	
+
 	if lastReactivation == nil {
 		return true, nil
 	}
-	
+
 	nextCheck := lastReactivation.Add(time.Duration(reactivationIntervalH) * time.Hour)
 	return time.Now().After(nextCheck), nil
 }
@@ -330,7 +330,7 @@ func isRateLimitOrServerError(httpCode int) bool {
 
 func discoverFeeds(pageURL string) ([]string, error) {
 	domain := extractDomain(pageURL)
-	
+
 	// Check circuit breaker
 	if circuitBreaker.IsDomainDown(domain) {
 		logger.Warn().Str("domain", domain).Str("url", pageURL).Msg("Skipping domain due to circuit breaker")
@@ -384,7 +384,7 @@ func findFeedLinksInHTML(baseURL string) ([]string, error) {
 
 func parseFeed(feedURL string) (*gofeed.Feed, error) {
 	domain := extractDomain(feedURL)
-	
+
 	// Check circuit breaker
 	if circuitBreaker.IsDomainDown(domain) {
 		return nil, fmt.Errorf("domain %s is in circuit breaker cooldown", domain)
@@ -711,10 +711,10 @@ func processInactiveSource(ctx context.Context, source URLSource) {
 	}
 
 	logger.Info().Int("count", len(feeds)).Str("url", source.URL).Msg("Reactivation successful - found feeds")
-	
+
 	// Record reactivation success
 	recordReactivationSuccess(ctx, source.ID)
-	
+
 	// Process the found feeds
 	maxFeeds := getEnvInt("MAX_FEEDS_PER_URL", 5)
 	if len(feeds) > maxFeeds {
@@ -869,7 +869,7 @@ func Main() {
 			} else if shouldReactivate {
 				logger.Info().Msg("Checking for feeds to reactivate")
 				updateReactivationCheck(ctx)
-				
+
 				inactiveSources, err := getInactiveURLsForReactivation(ctx)
 				if err != nil {
 					logger.Error().Err(err).Msg("Error fetching inactive URLs for reactivation")

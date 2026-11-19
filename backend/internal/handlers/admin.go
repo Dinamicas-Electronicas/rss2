@@ -11,6 +11,10 @@ import (
 	"crypto/rand"
 	"encoding/csv"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/rss2/backend/internal/config"
+	"github.com/rss2/backend/internal/db"
+	"github.com/rss2/backend/internal/models"
 	"io"
 	"log"
 	"math"
@@ -21,10 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/gin-gonic/gin"
-	"github.com/rss2/backend/internal/config"
-	"github.com/rss2/backend/internal/db"
-	"github.com/rss2/backend/internal/models"
 )
 
 func CreateAlias(c *gin.Context) {
@@ -235,17 +235,18 @@ func GetIngestStats(c *gin.Context) {
 		coverage = math.Round(float64(feedsConNoticias7d)/float64(activos)*10000) / 100
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"feeds_total":          total,
-		"feeds_activos":        activos,
-		"feeds_con_fallos":     fallidos,
-		"noticias_total":       noticiasTotal,
-		"noticias_ultimos_7d":  noticias7d,
+		"feeds_total":           total,
+		"feeds_activos":         activos,
+		"feeds_con_fallos":      fallidos,
+		"noticias_total":        noticiasTotal,
+		"noticias_ultimos_7d":   noticias7d,
 		"feeds_con_noticias_7d": feedsConNoticias7d,
-		"cobertura_7d_pct":     coverage,
+		"cobertura_7d_pct":      coverage,
 	})
 }
 
-func ExportAliases(c *gin.Context) {	rows, err := db.GetPool().Query(c.Request.Context(),
+func ExportAliases(c *gin.Context) {
+	rows, err := db.GetPool().Query(c.Request.Context(),
 		"SELECT alias, canonical_name, tipo FROM entity_aliases ORDER BY tipo, canonical_name")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get aliases", "message": err.Error()})
@@ -560,12 +561,12 @@ func GetTranslationStats(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"translations_last_1min":  last1min,
-		"translations_last_5min":  last5min,
-		"rate_per_second":         math.Round(rateSec*100) / 100,
-		"rate_per_minute":         math.Round(rateSec*60*100) / 100,
-		"active_workers":          activeWorkers + int64(remoteOnline),
-		"remote_workers_online":   remoteOnline,
+		"translations_last_1min": last1min,
+		"translations_last_5min": last5min,
+		"rate_per_second":        math.Round(rateSec*100) / 100,
+		"rate_per_minute":        math.Round(rateSec*60*100) / 100,
+		"active_workers":         activeWorkers + int64(remoteOnline),
+		"remote_workers_online":  remoteOnline,
 	})
 }
 
