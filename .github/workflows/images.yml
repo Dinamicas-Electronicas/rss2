@@ -47,28 +47,28 @@ jobs:
         include:
           - name: backend
             context: ./backend
-            dockerfile: Dockerfile
+            dockerfile: ./backend/Dockerfile
           - name: frontend
             context: ./frontend
-            dockerfile: Dockerfile
+            dockerfile: ./frontend/Dockerfile
           - name: ingestor
             context: ./rss-ingestor-go
-            dockerfile: Dockerfile
+            dockerfile: ./rss-ingestor-go/Dockerfile
           - name: pyworkers
             context: .
-            dockerfile: Dockerfile.scheduler
+            dockerfile: ./Dockerfile.scheduler
           - name: translator
             context: ./translator
-            dockerfile: Dockerfile.cpu
+            dockerfile: ./translator/Dockerfile.cpu
           - name: translator-gpu
             context: ./translator
-            dockerfile: Dockerfile.gpu
+            dockerfile: ./translator/Dockerfile.gpu
           - name: embeddings
             context: .
-            dockerfile: Dockerfile.embeddings
+            dockerfile: ./Dockerfile.embeddings
           - name: ner
             context: .
-            dockerfile: Dockerfile.ner
+            dockerfile: ./Dockerfile.ner
     steps:
       - uses: actions/checkout@v4
 
@@ -129,7 +129,7 @@ jobs:
         include:
           - name: tts
             context: .
-            dockerfile: Dockerfile.tts
+            dockerfile: ./Dockerfile.tts
     steps:
       - uses: actions/checkout@v4
 
