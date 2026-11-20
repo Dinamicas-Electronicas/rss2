@@ -277,4 +277,48 @@ cd ../rss-ingestor-go && go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
 ---
 
+## 11. Imágenes precompiladas (GitHub Actions + GHCR)
+
+`.github/workflows/images.yml` construye y publica las imágenes en GitHub
+Container Registry. Se ejecuta solo si pasan los tests de `ci.yml` y publica:
+
+| Imagen | Cuándo |
+|---|---|
+| `rss2-backend`, `rss2-frontend`, `rss2-ingestor`, `rss2-pyworkers`, `rss2-translator`, `rss2-translator-gpu`, `rss2-embeddings`, `rss2-ner` | cada push a `master` y cada tag `v*` |
+| `rss2-tts` | manual desde **Actions → Images → Run workflow**, con `build_heavy=true` |
+
+Etiquetas publicadas: `latest` (solo `master`/`main`), `sha-<commit>` y el tag
+`v*` si aplica. Para producción usa siempre la etiqueta `sha-…`.
+
+Tras el primer run, los paquetes de GHCR suelen crearse **privados**. Para que
+el servidor pueda descargarlos sin autenticarse, cámbialos a públicos en
+**GitHub → Packages → rss2-… → Package settings**, o haz:
+
+```bash
+docker login ghcr.io -u <usuario> -p <token-con-read:packages>
+```
+
+Despliegue con las imágenes ya construidas:
+
+```bash
+RSS2_TAG=sha-752ad1e ./scripts/deploy-images.sh
+# equivale a:
+docker compose -f docker-compose.yml -f docker-compose.images.yml pull
+docker compose -f docker-compose.yml -f docker-compose.images.yml up -d --no-build
+```
+
+Variables:
+
+| Variable | Por defecto | Uso |
+|---|---|---|
+| `RSS2_REGISTRY` | `ghcr.io/dinamicas-electronicas` | namespace del registro (fork/otra org) |
+| `RSS2_TAG` | `latest` | etiqueta a desplegar (`sha-…` recomendado) |
+
+> Aviso: el conjunto completo ronda los 15 GB extraídos. En un host con poco
+> disco, limpia antes (`docker system prune`) o publica/despliega solo las
+> imágenes que necesites. Los perfiles `tts`/`gpu` no se descargan si no se
+> activan con `COMPOSE_PROFILES=tts,gpu`.
+
+---
+
 © 2026 Dinámicas Electrónicas · <dinamicas.electronicas@gmail.com> · Licencia MIT

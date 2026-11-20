@@ -7,6 +7,7 @@ name: CI
 on:
   push:
     branches: [main, master]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
 
@@ -118,3 +119,17 @@ jobs:
           DB_USER: rss
           DB_PASS: rss
         run: python3 scripts/check-schema-drift.py
+
+  # Publica las imagenes en GHCR solo si los tres jobs anteriores pasan.
+  # TTS no se construye aqui: se lanza a mano desde el workflow Images con
+  # build_heavy=true (pesa ~4,8 GB).
+  images:
+    name: Imagenes (GHCR)
+    if: github.event_name != 'pull_request'
+    needs: [backend, frontend, schema]
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/images.yml
+    with:
+      build_heavy: false

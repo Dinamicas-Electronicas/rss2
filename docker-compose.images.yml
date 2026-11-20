@@ -1,0 +1,94 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Override para desplegar las imagenes publicadas en GHCR por
+# .github/workflows/images.yml, en vez de construir en el host.
+#
+# Uso recomendado (etiqueta inmutable por commit):
+#   RSS2_TAG=sha-752ad1e ./scripts/deploy-images.sh
+#
+# O a mano:
+#   docker compose -f docker-compose.yml -f docker-compose.images.yml pull
+#   docker compose -f docker-compose.yml -f docker-compose.images.yml up -d --no-build
+#
+# `pull_policy: always` garantiza que cada `up` use la imagen del registro y no
+# una copia local antigua. El `build:` del compose base se conserva para el
+# flujo local; con `--no-build` no se usa.
+
+services:
+  backend:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  wiki:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  cooccurrences:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  topics:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  related:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  event-clustering:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  scraper:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  discovery:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-backend:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  ingestor:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-ingestor:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  translation-scheduler:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-pyworkers:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  langdetect:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-pyworkers:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  ner:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-ner:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  embeddings:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-embeddings:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  tts:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-tts:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  translator:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-translator:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  translator-2:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-translator:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  translator-models:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-translator:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  translator-gpu:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-translator-gpu:${RSS2_TAG:-latest}
+    pull_policy: always
+
+  frontend:
+    image: ${RSS2_REGISTRY:-ghcr.io/dinamicas-electronicas}/rss2-frontend:${RSS2_TAG:-latest}
+    pull_policy: always
