@@ -18,16 +18,19 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 
-RUN pip install --no-cache-dir torch==2.1.0 torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cu118
+# torch solo se usa para convertir el modelo a CTranslate2; la traduccion en
+# si la hace CTranslate2 con CUDA. Se instala la variante de CPU porque el
+# conversor no necesita GPU y el wheel CUDA multiplica el tamano de la imagen.
+RUN pip install --no-cache-dir torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 
 RUN pip install --no-cache-dir \
-    ctranslate2==3.24.0 \
-    sentencepiece \
-    transformers==4.36.0 \
-    protobuf==3.20.3 \
-    "numpy<2" \
-    psycopg2-binary \
-    langdetect
+    ctranslate2==4.9.0 \
+    sentencepiece==0.2.3 \
+    transformers==5.23.0 \
+    protobuf==6.33.5 \
+    "numpy==1.26.4" \
+    psycopg2-binary==2.9.10 \
+    langdetect==1.0.9
 
 RUN find /usr/local/lib/python3.11/site-packages/ctranslate2* \
     -name "libctranslate2-*.so.*" -o -name "libctranslate2.so*" | \

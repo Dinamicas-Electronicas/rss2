@@ -9,6 +9,11 @@
 # POSTGRES_PASSWORD, REDIS_PASSWORD, DB_PASS, SECRET_KEY, GRAFANA_PASSWORD
 # ==================================================================================
 
+# Nombre fijo del proyecto: sin esto Compose lo deriva del nombre de la
+# carpeta y `docker compose` deja de reconocer los contenedores si el
+# repositorio se clona con otro nombre.
+name: rss2
+
 # Rotación de logs: sin esto un worker en bucle de error puede llenar el disco
 # (el log del Postgres llegó a 23 GB por inserts repetidos con UTF-8 inválido).
 x-logging: &default-logging
@@ -23,7 +28,10 @@ services:
   # ------------------------------------------------------------------------------
   db:
     logging: *default-logging
-    image: pgvector/pgvector:pg16
+    # Etiqueta fijada: `pg16` es flotante y arrastra tanto la version de
+    # pgvector como la distro base. Al subir la extension hay que ejecutar
+    # `ALTER EXTENSION vector UPDATE;` dentro de la base de datos.
+    image: pgvector/pgvector:0.8.7-pg16-bookworm
     container_name: rss2_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-rss}
@@ -35,8 +43,10 @@ services:
     # Docker asigna 64 MB a /dev/shm por contenedor: con consultas que usan
     # agregación hash en paralelo Postgres falla con «could not resize shared
     # memory segment… No space left on device» (SQLSTATE 53100) y se caen
-    # tests y consultas de la API de forma intermitente.
-    shm_size: '256m'
+    # tests y consultas de la API de forma intermitente. 1 GB también cubre
+    # la construcción del índice HNSW de pgvector sobre datos existentes
+    # (con 256 MB fallaba con el mismo error).
+    shm_size: '1gb'
     networks:
       - backend
     restart: unless-stopped
@@ -55,14 +65,20 @@ services:
       -c autovacuum_max_workers=3
       -c wal_level=replica
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      # -h 127.0.0.1 es importante: durante la inicialización (init-db/) el
+      # entrypoint arranca un servidor temporal que solo escucha en el socket
+      # Unix. Sin -h, pg_isready responde "ok" mientras las migraciones aún se
+      # aplican y los workers arrancan con un esquema a medias. Por TCP el
+      # puerto solo abre cuando init-db/ ha terminado.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 30
 
   redis:
     logging: *default-logging
-    image: redis:7-alpine
+    # Redis 8 lee sin cambios los RDB/AOF de la version 7.
+    image: redis:8.8-alpine
     container_name: rss2_redis
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD}
     volumes:
@@ -79,12 +95,42 @@ services:
   # ------------------------------------------------------------------------------
   # SERVICIOS EXTERNOS (GPU/ML) - Se mantienen fuera de Go
   # ------------------------------------------------------------------------------
+  # Prepara el modelo NLLB en ./models antes de arrancar los traductores.
+  #
+  # El modelo NO viaja en la imagen ni en el repositorio: la primera vez se
+  # convierte a CTranslate2 (descarga ~2,4 GB de HuggingFace y tarda varios
+  # minutos). Este servicio de un solo uso lo deja listo y los traductores
+  # esperan a que termine, de modo que dos réplicas no conviertan el mismo
+  # directorio a la vez. Si el modelo ya existe termina en segundos.
+  translator-models:
+    logging: *default-logging
+    image: rss2-translator
+    pull_policy: never
+    container_name: rss2_translator_models
+    entrypoint: ["python", "-m", "workers.prepare_model"]
+    environment:
+      CT2_MODEL_PATH: /models/nllb-ct2
+      CT2_COMPUTE_TYPE: int8
+      UNIVERSAL_MODEL: ${UNIVERSAL_MODEL:-facebook/nllb-200-distilled-600M}
+      HF_HOME: /cache
+    volumes:
+      - ./models:/models
+      - ./hf_cache:/cache
+    networks:
+      - backend
+    restart: "no"
+
   # Traductor NLLB-200 (CTranslate2) - CPU
   translator:
     logging: *default-logging
     build:
       context: ./translator
       dockerfile: Dockerfile.cpu
+    # Etiqueta fija: translator-2 y translator-models reutilizan esta imagen.
+    # Sin ella Compose la nombra <directorio>-translator y, en un clon con otro
+    # nombre de carpeta, intenta descargarla de Docker Hub y aborta el arranque.
+    image: rss2-translator
+    pull_policy: never
     container_name: rss2_translator
     healthcheck:
       # Verifica que el proceso python esté corriendo buscando en /proc
@@ -112,10 +158,22 @@ services:
       DB_USER: ${POSTGRES_USER:-rss}
       DB_PASS: ${POSTGRES_PASSWORD}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      # Cache persistente del tokenizer de NLLB: sin esto cada recreacion del
+      # contenedor vuelve a descargarlo de HuggingFace.
+      HF_HOME: /cache
+      # Debe coincidir con el modelo que convierte translator-models.
+      UNIVERSAL_MODEL: ${UNIVERSAL_MODEL:-facebook/nllb-200-distilled-600M}
     volumes:
-      - ./models:/models:ro
+      # Escritura necesaria: la primera vez se convierte el modelo aqui.
+      - ./models:/models
+      - ./hf_cache:/cache
     networks:
       - backend
+    depends_on:
+      translator-models:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     restart: unless-stopped
     deploy:
       resources:
@@ -132,6 +190,7 @@ services:
   translator-2:
     logging: *default-logging
     image: rss2-translator
+    pull_policy: never
     container_name: rss2_translator_2
     healthcheck:
       # Verifica que el proceso python esté corriendo buscando en /proc
@@ -157,11 +216,20 @@ services:
       DB_USER: ${POSTGRES_USER:-rss}
       DB_PASS: ${POSTGRES_PASSWORD}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      # Cache persistente del tokenizer de NLLB: sin esto cada recreacion del
+      # contenedor vuelve a descargarlo de HuggingFace.
+      HF_HOME: /cache
+      # Debe coincidir con el modelo que convierte translator-models.
+      UNIVERSAL_MODEL: ${UNIVERSAL_MODEL:-facebook/nllb-200-distilled-600M}
     volumes:
-      - ./models:/models:ro
+      - ./models:/models
+      - ./hf_cache:/cache
     networks:
       - backend
     depends_on:
+      # No arranca hasta que translator-models haya dejado el modelo listo.
+      translator-models:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
     restart: unless-stopped
@@ -184,7 +252,9 @@ services:
       dockerfile: Dockerfile.gpu
     container_name: rss2_translator_gpu
     environment:
-      CT2_MODEL_PATH: /models/nllb-ct2
+      # Directorio propio: el modelo int8 que prepara `translator-models`
+      # para CPU no se puede reutilizar en float16 en la misma ruta.
+      CT2_MODEL_PATH: /models/nllb-ct2-gpu
       CT2_DEVICE: cuda
       CT2_COMPUTE_TYPE: float16
       CT2_INTRA_THREADS: 4
@@ -198,8 +268,14 @@ services:
       DB_USER: ${POSTGRES_USER:-rss}
       DB_PASS: ${POSTGRES_PASSWORD}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      # Cache persistente del tokenizer de NLLB: sin esto cada recreacion del
+      # contenedor vuelve a descargarlo de HuggingFace.
+      HF_HOME: /cache
+      # Debe coincidir con el modelo que convierte translator-models.
+      UNIVERSAL_MODEL: ${UNIVERSAL_MODEL:-facebook/nllb-200-distilled-600M}
     volumes:
-      - ./models:/models:ro
+      - ./models:/models
+      - ./hf_cache:/cache
     networks:
       - backend
     restart: unless-stopped
@@ -234,7 +310,7 @@ services:
       DB_USER: ${POSTGRES_USER:-rss}
       DB_PASS: ${POSTGRES_PASSWORD}
       RSS_MAX_WORKERS: 20
-      RSS_POKE_INTERVAL_MIN: 60
+      RSS_POKE_INTERVAL_MIN: ${RSS_POKE_INTERVAL_MIN:-15}
       # Idioma destino de la traduccion. Lo usa el ingestor para marcar las
       # noticias de los canales "ya traducidos" con el idioma destino.
       TARGET_LANGS: ${TARGET_LANGS:-es}
@@ -257,6 +333,7 @@ services:
       context: .
       dockerfile: Dockerfile.scheduler
     image: rss2-pyworkers
+    pull_policy: never
     container_name: rss2_translation_scheduler
     healthcheck:
       # Verifica que el proceso esté corriendo
@@ -299,10 +376,12 @@ services:
   # Langdetect: noticias.lang (lo necesita el scheduler para encolar traducciones)
   langdetect:
     logging: *default-logging
-    build:
-      context: .
-      dockerfile: Dockerfile.scheduler
+    # Reutiliza la imagen que construye translation-scheduler (mismo
+    # Dockerfile). No se declara `build` aqui a proposito: construir dos
+    # servicios contra la misma etiqueta en un solo `docker compose build`
+    # termina en conflictos "AlreadyExists".
     image: rss2-pyworkers
+    pull_policy: never
     container_name: rss2_langdetect
     command: ["python", "workers/langdetect_worker.py"]
     healthcheck:
@@ -369,6 +448,10 @@ services:
   wiki:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_wiki
     entrypoint: ["/wiki-worker"]
     healthcheck:
@@ -404,12 +487,19 @@ services:
           memory: 512M
 
   # Cooccurrences: actualiza tabla de co-ocurrencias de entidades
-  # Se ejecuta una vez al día para mantener el grafo de entidades actualizado
+  # Al arrancar y después cada hora. El binario usa 24 h por defecto, pero en
+  # un despliegue nuevo la primera pasada ocurre antes de que NER cree tags y
+  # el grafo quedaría vacío un día entero.
   cooccurrences:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_cooccurrences
     entrypoint: ["/cooccurrences"]
+    command: ["-interval", "1h"]
     healthcheck:
       test: ["CMD-SHELL", "grep -q cooccurrences /proc/1/cmdline"]
       interval: 1h
@@ -436,6 +526,10 @@ services:
   topics:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_topics
     entrypoint: ["/topics"]
     environment:
@@ -489,7 +583,9 @@ services:
       EMB_LIMIT: 1000
       DEVICE: cpu
     ports:
-      - "6000:6000"
+      # Solo en loopback: la API de embeddings es interna (el backend la
+      # alcanza por la red de Docker). Publicarla en 0.0.0.0 no aporta nada.
+      - "127.0.0.1:6000:6000"
     volumes:
       - ./hf_cache:/cache
     networks:
@@ -521,6 +617,11 @@ services:
   #   Postgres.
   tts:
     logging: *default-logging
+    # Subsistema opcional: no arranca con `docker compose up -d`. Se activa
+    # con `docker compose --profile tts up -d` (o `./deploy.sh --with-tts`)
+    # despues de preparar los pesos con `make tts-models`. La imagen instala
+    # torch y varios motores: es la mas pesada del proyecto.
+    profiles: ["tts"]
     build:
       context: .
       dockerfile: Dockerfile.tts
@@ -593,6 +694,10 @@ services:
   related:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_related
     entrypoint: ["/related"]
     environment:
@@ -631,6 +736,10 @@ services:
   event-clustering:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_event_clustering
     entrypoint: ["/event_clustering"]
     environment:
@@ -669,6 +778,10 @@ services:
   scraper:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_scraper
     entrypoint: ["/scraper"]
     environment:
@@ -706,6 +819,10 @@ services:
   discovery:
     logging: *default-logging
     image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_discovery
     entrypoint: ["/discovery"]
     environment:
@@ -745,6 +862,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    # Etiqueta fija: los workers Go (wiki, topics, related, scraper,
+    # discovery, event-clustering, cooccurrences) reutilizan esta imagen. Si
+    # no se fija, Compose usa <directorio>-backend y, en un clon con otra
+    # carpeta, esos servicios intentan descargarla y el `up` falla.
+    image: rss2-backend
+    # La imagen la construye el servicio `backend` en este mismo proyecto.
+    # Sin esto Compose intenta descargarla de Docker Hub antes del build y,
+    # segun el orden, aborta con "pull access denied".
+    pull_policy: never
     container_name: rss2_backend
     command: server
     environment:
@@ -772,7 +898,8 @@ services:
       - backend
       - frontend
     ports:
-      - "8080:8080"   # Exposed for remote workers WebSocket connection
+      # Expuesto para la conexión WebSocket de los remote workers.
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -819,10 +946,10 @@ services:
   # ------------------------------------------------------------------------------
   nginx:
     logging: *default-logging
-    image: nginx:alpine
+    image: nginx:1.30-alpine
     container_name: rss2_nginx
     ports:
-      - "8888:80"
+      - "${RSS2_PORT:-8888}:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
@@ -846,7 +973,7 @@ services:
   # ------------------------------------------------------------------------------
   prometheus:
     logging: *default-logging
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.16.0
     container_name: rss2_prometheus
     profiles: ["monitoring"]
     volumes:
@@ -861,11 +988,11 @@ services:
 
   grafana:
     logging: *default-logging
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.2.6
     container_name: rss2_grafana
     profiles: ["monitoring"]
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
@@ -879,7 +1006,7 @@ services:
 
   cadvisor:
     logging: *default-logging
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
     container_name: rss2_cadvisor
     profiles: ["monitoring"]
     volumes:

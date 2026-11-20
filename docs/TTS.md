@@ -86,7 +86,7 @@ Comprobación:
 ### 3.4 Arranque
 
 ```bash
-docker compose up -d tts
+docker compose --profile tts up -d --build tts
 docker compose logs -f tts
 ```
 
@@ -463,7 +463,7 @@ explica por qué.
 ```bash
 # En .env
 TTS_ALLOW_VOICE_UPLOAD=1
-docker compose up -d tts
+docker compose --profile tts up -d tts
 ```
 
 ### 6.3 Registrar la muestra (administrador)

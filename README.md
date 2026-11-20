@@ -4,7 +4,7 @@
 > traducidas automáticamente al español.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8.svg)](https://golang.org/)
+[![Go](https://img.shields.io/badge/Go-1.27+-00ADD8.svg)](https://golang.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-336791.svg)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg)](https://docs.docker.com/compose/)
@@ -55,33 +55,79 @@ Todo en un **único puerto**: `:8888`
 
 ### Requisitos
 
-- Docker y Docker Compose
-- 8GB+ RAM recomendados
-- ~20GB espacio en disco
+- Docker Engine 24+ con Docker Compose v2 (`docker compose`)
+- 4 vCPU y 8 GB de RAM libres (16 GB si vas a usar el noticiario por voz)
+- ~30 GB de disco para las imágenes (torch, spaCy, modelos) + la base de datos
+- Salida a internet en el primer arranque (modelos NLLB, spaCy y embeddings)
 
-### Instalación
+### Un solo comando
 
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/Dinamicas-Electronicas/rss2.git
 cd rss2
-
-# 2. Copiar y configurar variables de entorno
-cp .env.example .env
-# Editar .env y rellenar:
-# - POSTGRES_PASSWORD (contraseña para PostgreSQL)
-# - REDIS_PASSWORD (contraseña para Redis)
-# - SECRET_KEY (clave secreta para JWT)
-
-# 3. Iniciar la aplicación
-docker compose up -d --build          # Build + levanta todos los servicios
-
-# 4. Esperar a que esté listo (~5 minutos) y acceder a:
+./deploy.sh
 ```
+
+`deploy.sh` deja el sistema funcionando sin pasos manuales:
+
+| Paso | Qué hace |
+|------|----------|
+| 1 | Crea `.env` con contraseñas aleatorias si no existe (permisos `600`) |
+| 2 | Crea `data/`, `models/` y `hf_cache/` |
+| 3 | Construye las imágenes en orden (backend primero: 7 workers Go lo reutilizan) |
+| 4 | Levanta la BD e importa `feeds.csv` antes de arrancar el ingestor |
+| 5 | Levanta el resto del stack y espera a que la API responda |
+
+La primera ejecución tarda **20–40 minutos**: compila torch/spaCy y, al
+arrancar el traductor, descarga y convierte NLLB a CTranslate2 (~2,4 GB) en
+`models/nllb-ct2`. Las siguientes usan la caché y tardan minutos.
+
+Cuando termina:
 
 🌐 **Frontend**: http://localhost:8888  
 📡 **API REST**: http://localhost:8888/api  
-❤️ **Favoritos**: Requiere registro/login
+🩺 **Salud**: http://localhost:8888/api/stats
+
+> El **primer usuario que se registre queda como administrador**. El ingestor
+> empieza a traer noticias en su primer ciclo (unos minutos después del
+> arranque); hasta entonces la portada está vacía.
+
+Opciones: `./deploy.sh --with-tts`, `--no-seed`, `--no-build`, `--help`.
+
+### Despliegue manual (equivalente)
+
+```bash
+# 1. Crear y revisar la configuración
+cp .env.example .env
+# Rellena POSTGRES_PASSWORD, REDIS_PASSWORD, SECRET_KEY y GRAFANA_PASSWORD
+# (o ejecuta ./scripts/bootstrap-env.sh para generarlas al azar).
+
+# 2. Construir en dos pasos (backend primero)
+docker compose build --pull backend
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
+
+# 3. Levantar
+docker compose up -d
+
+# 4. Cargar las fuentes RSS
+./scripts/seed-feeds.sh
+
+# 5. Comprobar que todo está sano
+make verify
+```
+
+`make verify` revisa contenedores, endpoints (`/api/stats`, `/api/news`,
+`/api/feeds`…) y que haya feeds y noticias en la base. Es de solo lectura y
+sale con código ≠ 0 si algo falla.
+
+`docker compose build --pull && docker compose up -d` también funciona en un clon limpio: todas las
+imágenes que comparten varios servicios tienen etiqueta fija (`rss2-backend`,
+`rss2-pyworkers`, `rss2-translator`), así que Compose no intenta descargarlas
+de Docker Hub.
+
+> Usa siempre `--pull` al reconstruir: sin él Docker reutiliza la etiqueta local
+> de `python:3.11-slim-bookworm`, `node:24-alpine`, `golang:1.27-alpine`, etc.,
+> y el redespliegue no aplica los parches de seguridad de la imagen base.
 
 ---
 
@@ -259,8 +305,8 @@ feeds RSS
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/api/search?q=` | Búsqueda con filtros |
-| GET | `/api/tags/popular` | Tags más mencionados |
+| GET | `/api/search?q=` | Búsqueda con filtros (`translated_only`, semántica, dedup) |
+| GET | `/api/entities` | Entidades populares (NER + estadísticas) |
 
 ### Estadísticas
 
@@ -467,10 +513,14 @@ npm run dev        # Desarrollo
 ### Docker
 
 ```bash
-# Primera vez: construir imagen compartida del backend
-docker compose build backend
+# Primera vez: construir en dos pasos (backend primero)
+docker compose build --pull backend
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
 
-# Luego iniciar todo
+# O simplemente:
+./deploy.sh
+
+# Iniciar todo (sin reconstruir)
 docker compose up -d
 
 # Ver logs
@@ -537,14 +587,18 @@ rss2/
 │
 ├── translator/               # Worker de traducción NLLB
 │
-├── scripts/                 # Utilidades de operación
+├── scripts/                  # Utilidades de operación
+│   ├── bootstrap-env.sh      # Crea .env con credenciales aleatorias
+│   ├── seed-feeds.sh         # Importa feeds.csv (idempotente)
 │   ├── prepare_tts_models.sh # Descarga los pesos del motor de voz
 │   └── setup_tts_test_db.sh  # Base de datos de pruebas del TTS
 │
-├── init-db/                  # Scripts SQL de inicialización
-│   ├── 001_init.sql         # Schema principal
-│   ├── 002_*.sql            # Migraciones
-│   └── ...
+├── init-db/                  # Scripts SQL de inicialización (orden alfabético)
+│   ├── 00-complete-schema.sql # Schema base + extensión pgvector
+│   ├── 01.schema.sql          # Tablas mínimas idempotentes
+│   ├── 02-…-04-*.sql          # Continentes, categorías y países
+│   ├── 05-…-70-*.sql          # Migraciones incrementales
+│   └── 99_stable_keys.sql     # Claves ISO/estables
 │
 ├── migrations/               # Migraciones para bases ya existentes
 │
@@ -556,6 +610,8 @@ rss2/
 │   ├── constitution.md       # Reglas obligatorias
 │   └── plan.md              # Roadmap
 │
+├── deploy.sh                 # Despliegue en un paso
+├── feeds.csv                 # Fuentes RSS iniciales (1.655)
 ├── nginx.conf                # Configuración nginx
 ├── docker-compose.yml        # Orquestación Docker
 ├── Dockerfile.tts            # Imagen del servicio de voz (Python + torch CPU)
@@ -563,6 +619,10 @@ rss2/
 ├── .env.example              # Variables de entorno ejemplo
 └── README.md                # Este archivo
 ```
+
+Los datos de ejecución viven en `data/` (Postgres, Redis, audios, imágenes),
+los modelos en `models/` y la caché de HuggingFace en `hf_cache/`. Los tres
+están en `.gitignore` y se crean solos en el primer despliegue.
 
 ---
 
@@ -573,8 +633,11 @@ rss2/
 | Variable | Descripción | Requerido |
 |---------|-------------|-----------|
 | `POSTGRES_PASSWORD` | Contraseña PostgreSQL | ✅ |
-| `REDIS_PASSWORD` | Contraseña Redis | ✅ |
-| `SECRET_KEY` | Clave para JWT | ✅ |
+| `REDIS_PASSWORD` | Contraseña Redis (sin ella Redis no arranca) | ✅ |
+| `SECRET_KEY` | Clave para JWT (el backend no arranca sin ella) | ✅ |
+| `GRAFANA_PASSWORD` | Admin de Grafana (perfil `monitoring`) | No |
+| `RSS2_PORT` | Puerto público de nginx (default: `8888`) | No |
+| `BACKEND_PORT` | Puerto del API para remote workers (default: `8080`) | No |
 | `DB_HOST` | Host PostgreSQL (default: db) | No |
 | `DB_PORT` | Puerto PostgreSQL (default: 5432) | No |
 | `REDIS_URL` | URL Redis (default: redis://:pwd@redis:6379) | No |
@@ -589,15 +652,23 @@ Permite buscar noticias, elegir las de un informativo y generar un noticiario
 audio con la voz en español.
 
 ```bash
-# 1. Preparar los pesos (fuera del arranque del servicio)
+# 1. Preparar los pesos (fuera del arranque del servicio; ~5 GB)
 make tts-models
 
-# 2. Arrancar el servicio (interno: no publica puertos)
-docker compose up -d tts
+# 2. Arrancar el servicio (perfil opcional; interno, no publica puertos)
+docker compose --profile tts up -d --build tts
 
 # 3. Esquema en bases ya existentes
 docker compose exec -T db psql -U rss -d rss < migrations/add_tts.sql
 ```
+
+O directamente `./deploy.sh --with-tts` (construye el resto del stack y el
+servicio de voz en la misma pasada).
+
+El perfil `tts` no se levanta con `docker compose up -d`: la imagen instala
+torch y tres motores y es la más pesada del proyecto. Si no está activo, los
+endpoints `/api/tts/*` responden `503` y el resto de la aplicación funciona
+igual.
 
 En una base nueva, `init-db/57-add-tts.sql` se aplica solo.
 
@@ -639,27 +710,76 @@ Detalle completo: [`docs/TTS.md`](docs/TTS.md) · [`specs/10-tts/`](specs/10-tts
 ### Perfiles Docker Compose
 
 ```bash
-# Perfil por defecto (CPU)
+# Perfil por defecto (CPU): ingesta, traducción, NER, embeddings, API y web
 docker compose up -d
+
+# Con el noticiario por voz (antes: make tts-models)
+docker compose --profile tts up -d --build tts
 
 # Con GPU (traductor NVIDIA)
 docker compose --profile gpu up -d
 
 # Con monitoreo (Prometheus + Grafana)
 docker compose --profile monitoring up -d
+
+# Grafana accesible en http://localhost:3001 (solo loopback)
+docker compose -f docker-compose.yml -f docker-compose.local.yml \
+  --profile monitoring up -d
 ```
 
 ---
 
 ## 🐛 Solución de Problemas
 
+### El primer despliegue tarda mucho (es normal)
+
+`docker compose build` compila torch, spaCy y sentence-transformers, y
+`translator-models` descarga y convierte NLLB (~2,4 GB). En una máquina de 4
+núcleos son 20–40 minutos. Puedes seguirlo con:
+
+```bash
+docker compose logs -f translator-models
+./deploy.sh --no-build       # si ya has construido y solo quieres levantar
+```
+
+### "pull access denied … rss2-backend" al arrancar
+
+Compose estaba intentando descargar de Docker Hub una imagen que debía
+construirse (los workers Go reutilizan la del backend). Ya no ocurre: las
+imágenes compartidas tienen etiqueta fija y se construyen antes del `up`.
+Si lo ves, estás usando un `docker-compose.yml` antiguo.
+
+### La portada está vacía
+
+El ingestor solo puede traer noticias si hay feeds. Comprueba:
+
+```bash
+docker compose exec -T db psql -U rss -d rss -c "SELECT count(*) FROM feeds;"
+./scripts/seed-feeds.sh        # si el resultado es 0
+docker compose logs -f ingestor
+```
+
+El primer ciclo tarda unos minutos y el corpus crece poco a poco: no esperes
+miles de noticias en el primer minuto.
+
+### El traductor no arranca o se reinicia
+
+Comprueba que el modelo se convirtió y que el volumen es escribible:
+
+```bash
+docker compose logs translator-models
+docker compose exec translator ls -la /models/nllb-ct2
+```
+
+La conversión necesita salida a internet en el primer arranque. Si falla, el
+servicio `translator-models` termina con código ≠ 0 y los traductores no
+arrancan (falla de forma explícita, no en silencio).
+
 ### El backend no inicia ("unhealthy")
 
-El servidor tarda ~5 minutos en iniciar porque:
-1. Crea índices en tablas grandes (1.4M+ entidades)
-2. Refresca estadísticas de entidades
-
-Espera al menos 5 minutos después de `docker compose up`.
+El servidor tarda unos minutos en iniciar porque crea índices y refresca
+estadísticas de entidades. Espera al menos 5 minutos después de
+`docker compose up` y mira `docker compose logs backend`.
 
 ### "No space left on device"
 
@@ -677,6 +797,13 @@ Limpia el caché de nginx:
 ```bash
 docker compose restart nginx
 ```
+
+### `translations_pending` no baja
+
+El scheduler encola traducciones para los 12 idiomas de `idiomas_disponibles`,
+pero los traductores locales solo procesan `TARGET_LANGS` (por defecto `es`).
+El resto queda pendiente para los remote workers. Es el cuello de botella
+documentado en la arquitectura, no un fallo del despliegue.
 
 ### La búsqueda devuelve 0 resultados
 

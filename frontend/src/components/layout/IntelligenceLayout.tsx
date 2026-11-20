@@ -388,6 +388,18 @@ export function IntelligenceLayout() {
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-4 lg:p-6">
           <Outlet />
+
+          <footer className="mt-8 pt-4 border-t border-rss-border flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-rss-text-secondary">
+            <span>
+              © {new Date().getFullYear()} Dinámicas Electrónicas · Código creado por Dinámicas Electrónicas
+            </span>
+            <a
+              href="mailto:dinamicas.electronicas@gmail.com"
+              className="hover:text-rss-green-phosphor transition-colors"
+            >
+              dinamicas.electronicas@gmail.com
+            </a>
+          </footer>
         </main>
       </div>
     </div>

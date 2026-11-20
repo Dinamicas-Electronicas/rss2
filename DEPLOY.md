@@ -1,121 +1,279 @@
-# RSS2 - Guía de Despliegue Simplificada
+# RSS2 — Guía de despliegue
 
-## Arquitectura Simplificada
+Esta guía cubre el despliegue desde cero, las actualizaciones y las tareas de
+operación habituales. Para la visión general del proyecto, ver
+[README.md](./README.md).
 
-```
-RSS Feed → noticias(titulo, resumen, contenido) → scraper(enriquece contenido)
-                                                    ↓
-                                          traducciones(titulo_trad, resumen_trad, contenido_trad)
-                                                    ↓
-                                          API → frontend
-```
+---
 
-## Archivos Modificados
+## 1. Requisitos
 
-### Workers de Traducción
-- `translator/workers/ctranslator_worker.py` - **Worker principal** (docker-compose)
-- `remote-worker/worker.py` - **Worker remoto** (WebSocket)
+| Recurso | Mínimo | Recomendado |
+|---------|--------|-------------|
+| Docker | Engine 24+ y Compose v2 (`docker compose`) | última versión |
+| CPU | 4 vCPU | 6–8 vCPU |
+| RAM | 8 GB libres | 16 GB (especialmente con TTS) |
+| Disco | 30 GB | 60 GB+ (imágenes ML + `data/pgdata` + audios) |
+| Red | Salida a internet en el primer arranque | — |
 
-### Configuración de Límites
-| Parámetro | Valor | Descripción |
-|-----------|-------|-------------|
-| MAX_SRC_TOKENS | 2048 | Tokens origen |
-| MAX_NEW_TOKENS | 2048 | Tokens traducción |
-| MAX_BODY_CHARS | 80000 | Caracteres max por texto |
-| BODY_CHARS_CHUNK | 2000 | Tamaño de chunks |
+Patrones de datos que usa el compose: `data/` (Postgres, Redis, audios,
+imágenes), `models/` (NLLB y pesos de voz) y `hf_cache/` (HuggingFace). Se
+crean solos y no se versionan.
 
-### Base de Datos
-- `init-db/09-contenido.sql` - Migración para columnas contenido y contenido_trad
+---
 
-### Otros
-- `workers/translation_scheduler.py` - Crea jobs si hay resumen O contenido
-- `backend/cmd/scraper/main.go` - Guarda contenido en columna separada
-
-## Despliegue
-
-### 1. Ejecutar Migración
+## 2. Despliegue en un paso
 
 ```bash
-psql -h localhost -U rss -d rss -f init-db/09-contenido.sql
+git clone https://github.com/Dinamicas-Electronicas/rss2.git
+cd rss2
+./deploy.sh
 ```
 
-O si usas docker:
+El script:
+
+1. Crea `.env` con contraseñas aleatorias si no existe (`chmod 600`).
+2. Crea `data/`, `models/` y `hf_cache/`.
+3. Construye `backend` → `frontend`/`ingestor`/`translator` → workers Python.
+4. Levanta la base de datos e importa `feeds.csv` **antes** de arrancar el
+   ingestor (idempotente), para que su primer ciclo ya tenga fuentes.
+5. Levanta el resto del stack (el perfil `tts` queda fuera) y espera a que la
+   API responda (`GET /api/news`).
+
+Opciones:
+
 ```bash
-docker exec -i rss2_db psql -U rss -d rss < init-db/09-contenido.sql
+./deploy.sh --with-tts   # incluye el noticiario por voz (tras make tts-models)
+./deploy.sh --no-seed    # no importa feeds.csv
+./deploy.sh --no-build   # omite el build explícito (usa la caché)
+./deploy.sh --help
 ```
 
-### 2. Reiniciar Servicios
+Al terminar:
+
+| Servicio | URL |
+|----------|-----|
+| Web | http://localhost:8888 |
+| API | http://localhost:8888/api |
+| Salud | http://localhost:8888/api/stats |
+
+El **primer usuario registrado** obtiene rol de administrador.
+
+---
+
+## 3. Despliegue manual
+
+Equivalente al script, útil para entender o depurar:
 
 ```bash
-docker-compose restart translator translator-2 scraper translation-scheduler langdetect
+cp .env.example .env
+# Editar: POSTGRES_PASSWORD, REDIS_PASSWORD, SECRET_KEY, GRAFANA_PASSWORD
+# (o ./scripts/bootstrap-env.sh para generarlas automáticamente)
+
+docker compose build --pull backend
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
+docker compose up -d
+
+./scripts/seed-feeds.sh
+docker compose ps
 ```
 
-### 3. Verificar Traducciones
+`docker compose build --pull && docker compose up -d` también funciona en un clon limpio. Las
+imágenes compartidas tienen etiqueta fija (`rss2-backend`, `rss2-pyworkers`,
+`rss2-translator`), de modo que Compose las construye y no intenta descargarlas
+de Docker Hub.
+
+> **`--pull` no es opcional para actualizaciones de seguridad.** Sin él Docker
+> reutiliza las etiquetas locales de `python:3.11-slim-bookworm`,
+> `node:24-alpine`, `golang:1.27-alpine`, etc., y el redespliegue no recoge los
+> parches publicados desde el build anterior. Lo mismo aplica a las imágenes
+> externas del compose (`redis`, `nginx`, `pgvector`): se actualizan al hacer
+> `docker compose pull` / `up`.
+
+### Por qué el build va en dos pasos
+
+`wiki`, `topics`, `related`, `scraper`, `discovery`, `event-clustering` y
+`cooccurrences` **reutilizan la imagen del backend**; `langdetect` reutiliza la
+de `translation-scheduler`. Construir dos servicios contra la misma etiqueta en
+un solo comando provoca conflictos (`AlreadyExists`). Por eso `deploy.sh` y el
+`Makefile` separan el build.
+
+---
+
+## 4. Qué ocurre en el primer arranque
+
+| Fase | Qué pasa | Tiempo típico (4 vCPU) |
+|------|----------|------------------------|
+| Build | torch, spaCy, sentence-transformers, Go | 15–30 min |
+| `db` | Aplica `init-db/*.sql` (solo la primera vez) | 1–2 min |
+| `translator-models` | Descarga NLLB (~2,4 GB) y lo convierte a CTranslate2 | 5–15 min |
+| `embeddings` | Descarga el modelo multilingüe a `hf_cache/` | 1–3 min |
+| `backend` | Crea índices y refresca estadísticas en segundo plano | 1–5 min |
+| `ingestor` | Primer ciclo sobre 1.655 feeds | 2–10 min |
+
+Los traductores no arrancan hasta que `translator-models` termina con código
+0. Si la conversión falla, el fallo es explícito:
 
 ```bash
-# Ver que las traducciones se están procesando
-docker logs -f rss2_translator
-
-# Ver jobs pendientes
-docker exec -i rss2_db psql -U rss -d rss -c "SELECT COUNT(*) FROM traducciones WHERE status='pending';"
+docker compose logs translator-models
 ```
 
-## Workers
+---
 
-### Local (docker-compose)
-- `translator` - Traductor principal
-- `translator-2` - Réplica
-- `translation-scheduler` - Crea jobs
+## 5. Actualizar una instalación existente
 
-### Remoto
-- `remote-worker/worker.py` - Se conecta por WebSocket al backend
-
-Para usar remote worker:
 ```bash
-cd remote-worker
-WORKER_API_KEY=your_key WORKER_SERVER=ws://your-server:8080/ws/worker python worker.py
+git pull
+docker compose build --pull backend
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
+docker compose up -d
 ```
 
-## Flow de Datos
+Notas:
 
-1. **Ingestor** (`rss-ingestor-go`) → Extrae titulo y resumen del feed RSS
-2. **Scraper** → Extrae contenido completo de la URL y guarda en columna `contenido`
-3. **Langdetect** → Detecta idioma de la noticia
-4. **Translation Scheduler** → Crea job de traducción
-5. **Translator** → Traduce titulo_trad, resumen_trad, contenido_trad
-6. **NER/Embeddings/Related** → Procesos opcionales (lentos, no críticos)
+- `init-db/` **solo se ejecuta al inicializar `data/pgdata`**. Las migraciones
+  nuevas no se aplican solas en una base existente: revisa `migrations/` y
+  aplícalas a mano antes de reconstruir imágenes que dependan de ellas.
+- Tras recrear `backend`, reinicia `nginx` si usas una configuración antigua:
+  la incluida resuelve el upstream dinámicamente y ya no lo necesita.
+- Si cambias el formato de respuestas cacheadas:
+  `docker compose exec redis redis-cli -a "$REDIS_PASSWORD" FLUSHDB`.
 
-## API Response
+---
 
-La API ahora retorna `content_translated` junto con `title_translated` y `summary_translated`:
+## 6. Perfiles opcionales
 
-```json
-{
-  "id": "...",
-  "titulo": "Original title",
-  "title_translated": "Título traducido",
-  "summary_translated": "Resumen traducido",
-  "content_translated": "Contenido completo traducido...",
-  ...
-}
+```bash
+# Noticiario por voz (imagen pesada; requiere pesos)
+make tts-models
+docker compose --profile tts up -d --build tts
+
+# Traductor con GPU NVIDIA (nvidia-container-toolkit)
+docker compose --profile gpu up -d
+
+# Prometheus + Grafana + cAdvisor
+docker compose --profile monitoring up -d
+
+# ...y ver Grafana en http://localhost:3001 (solo loopback)
+docker compose -f docker-compose.yml -f docker-compose.local.yml \
+  --profile monitoring up -d
 ```
 
-## Troubleshooting
+El perfil `tts` no se levanta con `docker compose up -d`; sin él, los endpoints
+`/api/tts/*` responden `503` y el resto funciona con normalidad.
 
-### Traducciones no se crean
-1. Verificar que langdetect haya detectado el idioma: `SELECT lang FROM noticias LIMIT 5;`
-2. Verificar que el scheduler esté corriendo: `docker logs rss2_translation_scheduler`
+---
 
-### Contenido no se traduce
-1. Verificar que el scraper esté extrayendo contenido: `SELECT length(contenido) FROM noticias LIMIT 5;`
-2. Ver logs del translator: `docker logs -f rss2_translator`
+## 7. Verificación
 
-### OOM (Out of Memory)
-Reducir MAX_SEQ_PER_CALL en docker-compose.yml:
-```yaml
-environment:
-  MAX_SEQ_PER_CALL: 16  # en vez de 32
+```bash
+make verify                              # contenedores + API + datos
+docker compose ps                        # todos "healthy" salvo los one-shot
+curl -s localhost:8888/api/stats         # API + BD + Redis
+docker compose exec -T db psql -U rss -d rss -c "SELECT count(*) FROM feeds;"
+docker compose exec -T db psql -U rss -d rss -c "SELECT count(*) FROM noticias;"
 ```
+
+Comprobación del esquema (detecta migraciones de `init-db/` que falten en la
+base viva):
+
+```bash
+make check-schema
+```
+
+---
+
+## 8. Backup y restauración
+
+```bash
+# Backup comprimido
+docker compose exec -T db pg_dump -U rss -d rss -Fc -Z 6 > data/backup-$(date +%F).dump
+
+# Restauración
+docker compose exec -T db pg_restore -U rss -d rss --clean --if-exists < data/backup-XXXX.dump
+```
+
+No borres `data/pgdata` en producción: contiene el directorio de datos de
+PostgreSQL. Un reset del corpus (TRUNCATE + reingesta) está documentado en
+[AGENTS.md](./AGENTS.md#resetting-the-news-corpus).
+
+---
+
+## 9. Problemas frecuentes
+
+| Síntoma | Causa / solución |
+|---------|------------------|
+| `pull access denied … rss2-backend` | Compose intenta descargar una imagen local. Usa el `docker-compose.yml` actual (etiquetas fijas) y construye el backend primero. |
+| La web tarda en abrir | El backend crea índices al arrancar; espera a que esté `healthy`. |
+| Portada vacía | `feeds` vacío o primer ciclo del ingestor aún en curso: `./scripts/seed-feeds.sh` y `docker compose logs -f ingestor`. |
+| `translator-models` falla | Sin salida a internet o sin espacio para ~2,4 GB. |
+| `502` tras recrear `backend` | Reinicia `nginx` (`docker compose restart nginx`) si tu `nginx.conf` es antiguo. |
+| Redis en bucle | `REDIS_PASSWORD` vacía en `.env`: el `requirepass` queda sin argumento. |
+| TTS responde `503` | Perfil `tts` desactivado (comportamiento normal) o pesos sin preparar. |
+| `translations_pending` muy alto | El scheduler encola los 12 idiomas de `idiomas_disponibles`; los traductores locales solo procesan `TARGET_LANGS` (por defecto `es`). El resto queda pendiente para los remote workers. Es el cuello de botella documentado; no es un fallo. |
+
+---
+
+## 10. Actualizaciones de seguridad (noviembre 2026)
+
+Se actualizaron las imágenes base y las dependencias con avisos conocidos:
+
+| Componente | Versión anterior | Versión actual |
+|------------|------------------|----------------|
+| Node (build frontend) | 20 | 24 |
+| Go (backend/ingestor) | 1.23 / 1.25 | 1.27 |
+| Alpine (runtime) | `latest` | 3.23 |
+| nginx | `alpine` | 1.30-alpine |
+| Redis | 7 | 8.8 |
+| pgvector | `pg16` flotante | 0.8.7-pg16-bookworm |
+| Prometheus / Grafana / cAdvisor | `latest` | v3.16.0 / 13.2.6 / v0.52.1 |
+| Python (workers) | `3.11-slim` flotante | `3.11-slim-bookworm` |
+| transformers | 4.36–4.44 | 5.23.0 |
+| torch | 2.1.0 | 2.15.0 (CPU) / 2.11.0 (TTS) |
+| CTranslate2 | 3.24.0 | 4.9.0 |
+| pgx / jwt / x/net | 5.4.3 / 5.0.0 / 0.30 | 5.9.2 / 5.2.2 / 0.62.0 |
+| vite / vitest / axios | 5 / 1 / 1.6 | 8 / 5 / 1.21 |
+
+Procedimiento para aplicarlas en un host ya desplegado:
+
+```bash
+# 1. Reconstruir (el backend primero: los workers reutilizan su imagen)
+docker compose build --pull backend
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
+docker compose --profile tts build tts        # opcional; imagen grande (~8-10 GB)
+
+# 2. Recrear servicios
+docker compose up -d
+
+# 3. Gateway: nginx resuelve el upstream al arrancar
+docker compose restart nginx
+
+# 4. Monitoreo (perfil opcional), con las etiquetas fijadas
+docker compose --profile monitoring up -d --force-recreate prometheus grafana cadvisor
+
+# 5. pgvector: si la extensión instalada es anterior a 0.8.7
+docker compose exec -T db psql -U rss -d rss -c "ALTER EXTENSION vector UPDATE;"
+
+# 6. GPU (solo si se usa el perfil gpu)
+docker compose --profile gpu build --pull translator-gpu
+```
+
+Los **remote workers** (`remote-worker/`) deben actualizarse en bloque:
+`ctranslate2==4.9.0`, `transformers==5.23.0`, `torch==2.15.0`. Mezclar
+versiones de CTranslate2/Transformers con los traductores locales puede
+producir traducciones inconsistentes.
+
+Comprobaciones rápidas:
+
+```bash
+cd frontend && npm audit && npm test -- --run && npm run build
+cd backend && go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+cd ../rss-ingestor-go && go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+```
+
+> Nota: `python:3.11-slim-bookworm` se mantiene a propósito. Python 3.11 sigue
+> recibiendo parches de seguridad hasta octubre de 2027 y es la versión que
+> soportan MeloTTS/OpenVoice/spaCy con los pines actuales.
 
 ---
 

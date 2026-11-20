@@ -2,4 +2,4 @@
 // Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
 // SPDX-License-Identifier: MIT
 
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'

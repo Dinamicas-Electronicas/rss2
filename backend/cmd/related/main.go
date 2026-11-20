@@ -139,7 +139,6 @@ func ensureSchema(ctx context.Context) error {
 				1 - (te.embedding_vector <=> query_embedding) AS score
 			FROM traduccion_embeddings te
 			WHERE te.embedding_vector IS NOT NULL
-			  AND te.embedding_vector != '0'::vector(384)
 			  AND (1 - (te.embedding_vector <=> query_embedding)) > match_threshold
 			  AND (exclude_id IS NULL OR te.traduccion_id != exclude_id)
 			ORDER BY te.embedding_vector <=> query_embedding

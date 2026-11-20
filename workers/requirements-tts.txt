@@ -15,9 +15,9 @@
 # unitarias: se sustituye por un doble de prueba.
 
 numpy==1.26.4
-soundfile
-librosa
-flask
-redis
-psycopg2-binary
+soundfile==0.14.0
+librosa==0.11.0
+flask==3.1.3
+redis>=5.0.0
+psycopg2-binary==2.9.10
 pytest

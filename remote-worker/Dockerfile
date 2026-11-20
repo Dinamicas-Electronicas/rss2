@@ -19,14 +19,14 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 
 # CPU-only PyTorch
-RUN pip install --no-cache-dir torch==2.1.0 torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 
 RUN pip install --no-cache-dir \
-    ctranslate2==3.24.0 \
-    sentencepiece \
-    transformers==4.36.0 \
-    protobuf==3.20.3 \
-    "numpy<2" \
+    ctranslate2==4.9.0 \
+    sentencepiece==0.2.3 \
+    transformers==5.23.0 \
+    protobuf==6.33.5 \
+    "numpy==1.26.4" \
     websocket-client
 
 RUN find /usr/local/lib/python3.11/site-packages/ctranslate2* \

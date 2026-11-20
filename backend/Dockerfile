@@ -2,26 +2,35 @@
 # Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
 # SPDX-License-Identifier: MIT
 
-FROM golang:1.23 AS builder
+FROM golang:1.27-alpine AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y gcc musl-dev git
+RUN apk add --no-cache gcc musl-dev git
+
+# Cachea las dependencias: solo se descargan si cambian go.mod/go.sum.
+# Antes se ejecutaba `go mod tidy` en cada build, que puede modificar go.sum y
+# descargar módulos de test que no hacen falta para compilar.
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
-RUN go mod tidy
 
-# Build all commands
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /server ./cmd/server
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /scraper ./cmd/scraper
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /discovery ./cmd/discovery
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /wiki-worker ./cmd/wiki_worker
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /topics ./cmd/topics
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /related ./cmd/related
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /sanitize ./cmd/sanitize
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /entityscan ./cmd/entityscan
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /event_clustering ./cmd/event_clustering
-RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /cooccurrences ./cmd/cooccurrences
+# Una sola invocacion de `go build` para los 10 binarios: comparte el cache de
+# compilacion y paraleliza, en vez de 10 builds secuenciales. El nombre del
+# binario es el del directorio del paquete.
+RUN mkdir -p /out && CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /out/ \
+        ./cmd/server \
+        ./cmd/scraper \
+        ./cmd/discovery \
+        ./cmd/wiki_worker \
+        ./cmd/topics \
+        ./cmd/related \
+        ./cmd/sanitize \
+        ./cmd/entityscan \
+        ./cmd/event_clustering \
+        ./cmd/cooccurrences \
+    && mv /out/wiki_worker /out/wiki-worker
 
 FROM alpine:3.23
 
@@ -29,16 +38,8 @@ RUN apk add --no-cache ca-certificates tzdata postgresql-client
 
 WORKDIR /app
 
-COPY --from=builder /server /server
-COPY --from=builder /scraper /scraper
-COPY --from=builder /discovery /discovery
-COPY --from=builder /wiki-worker /wiki-worker
-COPY --from=builder /topics /topics
-COPY --from=builder /related /related
-COPY --from=builder /sanitize /sanitize
-COPY --from=builder /entityscan /entityscan
-COPY --from=builder /event_clustering /event_clustering
-COPY --from=builder /cooccurrences /cooccurrences
+# Copia los binarios con sus nombres finales (server, scraper, wiki-worker...).
+COPY --from=builder /out/ /
 
 # Symlinks for convenience
 RUN ln -s /server /usr/local/bin/server && \

@@ -65,8 +65,16 @@ func main() {
 		log.Printf("Initial refresh failed: %v, will retry on schedule", err)
 	}
 
-	ticker := time.NewTicker(*interval)
+	// El primer refresco ocurre al arrancar, antes de que NER haya creado
+	// tags en un despliegue nuevo (resultado: 0 filas). Se reintenta a los
+	// 10 min y despues se usa el intervalo configurado.
+	bootstrap := 10 * time.Minute
+	if *interval < bootstrap {
+		bootstrap = *interval
+	}
+	ticker := time.NewTicker(bootstrap)
 	defer ticker.Stop()
+	first := true
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -79,6 +87,10 @@ func main() {
 		case <-ticker.C:
 			if err := refreshCooccurrences(); err != nil {
 				log.Printf("Refresh failed: %v", err)
+			}
+			if first {
+				ticker.Reset(*interval)
+				first = false
 			}
 		}
 	}

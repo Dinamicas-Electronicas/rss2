@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
 # SPDX-License-Identifier: MIT
 
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
@@ -18,25 +18,25 @@ ENV PYTHONUNBUFFERED=1 \
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 
-RUN pip install --no-cache-dir torch==2.1.0 torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cu121
+RUN pip install --no-cache-dir torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 
 RUN pip install --no-cache-dir \
-    ctranslate2 \
-    sentencepiece \
-    transformers==4.44.0 \
-    protobuf==3.20.3 \
-    "numpy<2" \
-    psycopg2-binary \
+    ctranslate2==4.9.0 \
+    sentencepiece==0.2.3 \
+    transformers==5.23.0 \
+    protobuf==6.33.5 \
+    "numpy==1.26.4" \
+    psycopg2-binary==2.9.10 \
     redis \
-    requests \
-    beautifulsoup4 \
-    lxml \
+    requests>=2.34.2 \
+    beautifulsoup4>=4.15.0 \
+    lxml>=6.1.3 \
     langdetect \
     nltk \
-    scikit-learn \
+    scikit-learn>=1.9.1 \
     pandas \
-    sentence-transformers \
-    spacy
+    sentence-transformers==6.3.0 \
+    spacy>=3.8,<4.0
 
 RUN python -m spacy download es_core_news_lg
 

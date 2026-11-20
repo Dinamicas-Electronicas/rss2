@@ -4,7 +4,7 @@
 
 # RSS2 Workers Makefile
 
-.PHONY: all build clean deps ingestor scraper discovery topics related server test parity headers headers-check sanitize sanitize-dry-run sanitize-restore sanitize-local entities-scan entities-scan-apply entities-scan-local alerts-prune alerts-prune-apply alerts-prune-local dedupe-noticias event-clustering tts-models tts-test-db tts-test tts-test-local
+.PHONY: all build clean deps ingestor scraper discovery topics related server test parity headers headers-check sanitize sanitize-dry-run sanitize-restore sanitize-local entities-scan entities-scan-apply entities-scan-local alerts-prune alerts-prune-apply alerts-prune-local dedupe-noticias event-clustering tts-models tts-test-db tts-test tts-test-local deploy seed-feeds verify check-schema
 
 # Binary output directory
 BIN_DIR := bin
@@ -61,7 +61,7 @@ test:
 	cd backend && go test ./...
 	cd rss-ingestor-go && go test ./...
 
-# Tests del frontend. Se ejecutan dentro de la imagen node:20-alpine para no
+# Tests del frontend. Se ejecutan dentro de la imagen node:24-alpine para no
 # depender de Node instalado en el host. El tmpfs sobre node_modules/.vite
 # evita que el contenedor (que corre con el usuario actual) intente escribir en
 # un directorio de node_modules propiedad de root.
@@ -71,13 +71,13 @@ test:
 test-frontend:
 	docker run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp \
 		--tmpfs /app/node_modules/.vite:rw,uid=$$(id -u),gid=$$(id -g) \
-		-v $(PWD)/frontend:/app -w /app node:20-alpine npx vitest run
+		-v $(PWD)/frontend:/app -w /app node:24-alpine npx vitest run
 
 # Instala las dependencias del frontend dentro del contenedor (sin tocar el host).
 frontend-deps:
 	docker run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp \
 		--tmpfs /app/node_modules:rw,uid=$$(id -u),gid=$$(id -g) \
-		-v $(PWD)/frontend:/app -w /app node:20-alpine npm install
+		-v $(PWD)/frontend:/app -w /app node:24-alpine npm install
 
 # textclean está duplicado a propósito: ingestor y backend se construyen con
 # contextos de Docker separados. Este target garantiza que no haya deriva.
@@ -138,11 +138,26 @@ dedupe-noticias:
 	docker compose exec -T db psql -v ON_ERROR_STOP=1 -U $${POSTGRES_USER:-rss} -d $${POSTGRES_DB:-rss} \
 		-f /docker-entrypoint-initdb.d/63-dedupe-noticias.sql
 
+# Despliegue completo en un paso (credenciales, build, up, seed de feeds).
+# Ver ./deploy.sh --help para las opciones (--with-tts, --no-seed, --no-build).
+deploy:
+	./deploy.sh
+
+# Importa feeds.csv en la tabla feeds (idempotente).
+seed-feeds:
+	./scripts/seed-feeds.sh
+
+# Comprueba contenedores, API y datos del despliegue (solo lectura).
+verify:
+	./scripts/verify-deploy.sh
+
 # Comprueba que la base tiene todo lo que declaran los scripts de init-db/.
 # init-db/ solo se ejecuta en la PRIMERA inicializacion: una migracion
 # anadida despues no se aplica nunca y el sistema se rompe en silencio.
 check-schema:
-	DB_PASS=$${POSTGRES_PASSWORD} python3 scripts/check-schema-drift.py
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	DB_HOST=$${DB_HOST:-db} DB_PASS=$${POSTGRES_PASSWORD:-rss} \
+	python3 scripts/check-schema-drift.py
 
 # Run workers locally (requires DB and services)
 run-scraper:
@@ -203,5 +218,6 @@ tts-test-local:
 # ---------------------------------------------------------------------------
 docker-build:
 	docker compose build backend frontend ingestor translator
-	docker compose build translation-scheduler langdetect ner embeddings
-	docker compose build tts
+	docker compose build translation-scheduler ner embeddings
+	# tts esta en el perfil opcional: se construye solo si se va a usar.
+	docker compose --profile tts build tts

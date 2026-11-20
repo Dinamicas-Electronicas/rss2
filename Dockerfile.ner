@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
 # SPDX-License-Identifier: MIT
 
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip
 # en Tokenizer._flush_specials (PreshMap itera claves uint64 >= 2^63).
 # Upstream: https://github.com/explosion/spaCy/issues/14047
 RUN pip install --no-cache-dir "preshed==3.0.13"
-RUN pip install --no-cache-dir spacy psycopg2-binary beautifulsoup4
+RUN pip install --no-cache-dir "spacy==3.8.18" psycopg2-binary==2.9.10 beautifulsoup4==4.15.0
 RUN python -m spacy download es_core_news_lg
 RUN python -m spacy download en_core_web_lg
 

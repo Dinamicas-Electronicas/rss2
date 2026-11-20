@@ -1,0 +1,14 @@
+# RSS2 — Agregador multilingüe de noticias RSS
+# Copyright (c) 2026 Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Sin esto, un `node_modules` del host se cuela en el contexto y el segundo
+# COPY del Dockerfile sobrescribe el que instaló el contenedor (puede mezclar
+# binarios nativos de otra plataforma). El build debe ser reproducible.
+node_modules
+dist
+.vite
+coverage
+*.log
+.env
+.env.*

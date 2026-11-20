@@ -375,7 +375,10 @@ func GetNews(c *gin.Context) {
 		}
 	} else {
 		// Browse sin filtros: conteo aproximado global (instantaneo).
-		countQuery := "SELECT reltuples::bigint FROM pg_class WHERE relname = 'noticias'"
+		// reltuples vale -1 en una tabla recien creada y sin ANALYZE (primer
+		// despliegue): sin el GREATEST la API respondia total=-1 y la
+		// paginacion del frontend salia rota.
+		countQuery := "SELECT GREATEST(reltuples::bigint, 0) FROM pg_class WHERE relname = 'noticias'"
 		if err := db.GetPool().QueryRow(c.Request.Context(), countQuery).Scan(&total); err != nil {
 			log.Printf("Count query error: %v", err)
 			total = 0
@@ -421,7 +424,9 @@ func GetNews(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	var newsList []models.NewsWithTranslations
+	// Slice inicializado (no nil): con la tabla vacia el JSON debe ser
+	// "news": [] y no "news": null, que el frontend no sabe interpretar.
+	newsList := make([]models.NewsWithTranslations, 0)
 	for rows.Next() {
 		var n models.NewsWithTranslations
 		var id, titulo, resumen, contenido, url string
@@ -1282,13 +1287,23 @@ func StartEntityStatsRefresher() {
 	go func() {
 		// Espera a que la BD este lista (el arranque ya refresca).
 		time.Sleep(90 * time.Second)
+		refreshes := 0
 		for {
 			if !entityStatsRefreshInFlight() {
 				if err := RefreshEntityStatsStartup(); err != nil {
 					log.Printf("entity_stats: error en el refresco periodico: %v", err)
 				}
 			}
-			time.Sleep(time.Duration(intervalMin) * time.Minute)
+			refreshes++
+			wait := time.Duration(intervalMin) * time.Minute
+			// Las primeras pasadas ocurren antes de que NER termine de
+			// etiquetar (Populares/Evolucion vacios). Refrescando cada 5 min
+			// durante el primer cuarto de hora la tabla se puebla pronto; a
+			// partir de ahi se respeta el intervalo configurado.
+			if refreshes <= 3 {
+				wait = 5 * time.Minute
+			}
+			time.Sleep(wait)
 		}
 	}()
 }
@@ -1476,7 +1491,7 @@ func GetEntityGraph(c *gin.Context) {
 						linkRows, err := db.GetPool().Query(queryCtx, linksQuery, nodeIDs)
 						if err == nil {
 							defer linkRows.Close()
-							var links []models.EntityGraphLink
+							links := make([]models.EntityGraphLink, 0)
 							for linkRows.Next() {
 								var link models.EntityGraphLink
 								if err := linkRows.Scan(&link.Source, &link.Target, &link.Value); err == nil {
@@ -1554,7 +1569,7 @@ func GetEntityGraph(c *gin.Context) {
 		}
 		defer rows.Close()
 
-		var nodes []models.EntityGraphNode
+		nodes := make([]models.EntityGraphNode, 0)
 		var nodeIDs []int64
 		for rows.Next() {
 			var n models.EntityGraphNode
@@ -1584,7 +1599,7 @@ func GetEntityGraph(c *gin.Context) {
 		}
 		defer linkRows.Close()
 
-		var links []models.EntityGraphLink
+		links := make([]models.EntityGraphLink, 0)
 		for linkRows.Next() {
 			var link models.EntityGraphLink
 			if err := linkRows.Scan(&link.Source, &link.Target, &link.Value); err == nil {
@@ -1596,7 +1611,13 @@ func GetEntityGraph(c *gin.Context) {
 		return
 	}
 
-	// Default: get top entities by co-occurrence count using efficient query
+	// Default: get top entities by co-occurrence count using efficient query.
+	//
+	// Con `tipo` hay que elegir primero las etiquetas de ESE tipo y despues
+	// sus enlaces. Antes se tomaban los 40 tags con mas co-ocurrencias
+	// globales (casi todos "tema") y se filtraban por tipo al final: para
+	// persona/organizacion/lugar no quedaba ninguno y la respuesta era
+	// {"nodes": null}, que dejaba el grafo vacio en el frontend.
 	topTagsQuery := `
 		SELECT tag_id
 		FROM (
@@ -1612,7 +1633,32 @@ func GetEntityGraph(c *gin.Context) {
 		ORDER BY SUM(total_count) DESC
 		LIMIT $1
 	`
-	rows, err := db.GetPool().Query(queryCtx, topTagsQuery, limit)
+	tagsQuery := topTagsQuery
+	queryArgs := []interface{}{limit}
+	if tipo != "" {
+		tagsQuery = `
+			SELECT t.id
+			FROM tags t
+			LEFT JOIN (
+				SELECT tag_id, SUM(total_count) AS total_count
+				FROM (
+					SELECT tag1_id as tag_id, SUM(co_count) as total_count
+					FROM entity_cooccurrences GROUP BY tag1_id
+					UNION ALL
+					SELECT tag2_id as tag_id, SUM(co_count) as total_count
+					FROM entity_cooccurrences GROUP BY tag2_id
+				) combined
+				GROUP BY tag_id
+			) cc ON cc.tag_id = t.id
+			WHERE t.tipo = $2
+			ORDER BY COALESCE(cc.total_count, 0) DESC, t.id
+			LIMIT $1
+		`
+		queryArgs = []interface{}{limit, tipo}
+	}
+
+	var rows pgx.Rows
+	rows, err := db.GetPool().Query(queryCtx, tagsQuery, queryArgs...)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to fetch top entities", Message: err.Error()})
 		return
@@ -1665,7 +1711,7 @@ func GetEntityGraph(c *gin.Context) {
 	}
 	defer nodesRows.Close()
 
-	var nodesArray []models.EntityGraphNode
+	nodesArray := make([]models.EntityGraphNode, 0)
 	for nodesRows.Next() {
 		var n models.EntityGraphNode
 		if err := nodesRows.Scan(&n.ID, &n.Valor, &n.Tipo, &n.WikiSummary); err == nil {
@@ -1688,7 +1734,7 @@ func GetEntityGraph(c *gin.Context) {
 	}
 	defer linkRows.Close()
 
-	var links []models.EntityGraphLink
+	links := make([]models.EntityGraphLink, 0)
 	for linkRows.Next() {
 		var link models.EntityGraphLink
 		if err := linkRows.Scan(&link.Source, &link.Target, &link.Value); err == nil {

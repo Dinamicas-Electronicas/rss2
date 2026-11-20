@@ -10,7 +10,7 @@
 #
 # torch se instala desde el indice de CPU: la build con CUDA multiplica por
 # diez el tamano de la imagen y esta maquina no tiene GPU.
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
@@ -31,18 +31,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install --no-cache-dir --upgrade pip
 
-# torch/torchaudio solo para CPU.
+# torch/torchaudio solo para CPU. Se fijan a la misma version: torchaudio
+# publica su ultima version para torch 2.11, y la pareja debe coincidir.
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
-    torch torchaudio
+    torch==2.11.0 torchaudio==2.11.0
 
 # numpy se fija por debajo de 2: melo, librosa y soundfile no son compatibles
 # con numpy 2 todavia.
 RUN pip install --no-cache-dir "numpy==1.26.4" \
-    librosa \
-    soundfile \
-    flask \
-    redis \
-    psycopg2-binary
+    librosa==0.11.0 \
+    soundfile==0.14.0 \
+    flask==3.1.3 \
+    redis>=5.0.0 \
+    psycopg2-binary==2.9.10
 
 # Motor de sintesis base (voz espanola). Sus dependencias las trae el propio
 # repositorio.
@@ -76,15 +77,17 @@ RUN pip install --no-cache-dir \
 # gradio==6.8.0 (solo sirve para su demo web). Despues se instalan a mano las
 # dependencias que de verdad usa chatterbox.mtl_tts.
 #
-# transformers se sube a 5.2.0: la que trae la imagen (4.27.4) no tiene
-# LlamaModel, que T3 importa al arrancar. MeloTTS solo usa AutoTokenizer y
-# AutoModelForMaskedLM, siguen estando en 5.x (se comprueba abajo).
+# transformers se sube a 5.23.0: las versiones 4.x tienen varios avisos de
+# seguridad (incluido RCE al cargar config.json) y la 4.27.4 que traia la
+# imagen tampoco tiene LlamaModel, que T3 importa al arrancar. MeloTTS solo usa
+# AutoTokenizer y AutoModelForMaskedLM, siguen estando en 5.x (se comprueba
+# abajo).
 RUN pip install --no-cache-dir --no-deps git+https://github.com/resemble-ai/chatterbox.git
 RUN pip install --no-cache-dir \
-    "transformers==5.2.0" \
-    "diffusers==0.29.0" \
+    "transformers==5.23.0" \
+    "diffusers==0.38.0" \
     "conformer==0.3.2" \
-    "safetensors==0.5.3" \
+    "safetensors==0.8.0" \
     "einops" \
     "omegaconf" \
     s3tokenizer \

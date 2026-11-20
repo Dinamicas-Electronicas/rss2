@@ -59,15 +59,31 @@ npm run build                # tsc && vite build
 
 ### Docker startup
 ```bash
-cp .env.example .env         # fill in POSTGRES_PASSWORD, REDIS_PASSWORD, SECRET_KEY
-docker compose up -d --build backend   # first: build shared image
-docker compose up -d --no-build        # then: rest of services
+./deploy.sh                  # credenciales + build + up + seed de feeds
+./deploy.sh --with-tts       # además el noticiario por voz (tras make tts-models)
 ```
+Equivalente manual:
+```bash
+cp .env.example .env         # fill in POSTGRES_PASSWORD, REDIS_PASSWORD, SECRET_KEY
+docker compose build --pull backend   # first: build shared image (rss2-backend)
+docker compose build --pull frontend ingestor translator translation-scheduler ner embeddings
+docker compose up -d
+./scripts/seed-feeds.sh
+```
+`docker compose build --pull && docker compose up -d` also works: every service that reuses an image
+now carries its fixed tag (`rss2-backend`, `rss2-pyworkers`, `rss2-translator`),
+so Compose does not try to pull it. `tts` lives behind the `tts` profile.
+`translator-models` is a one-shot service that converts NLLB into `./models`
+before the translators start.
+
+> Always pass `--pull` when rebuilding: without it Docker reuses the local
+> `python:3.11-slim-bookworm` / `node:24-alpine` / `golang:1.27-alpine` tag and
+> the redeploy does not pick up base-image security patches.
 
 ### Docker builds (two-step, avoids AlreadyExists conflicts)
 ```bash
-docker compose build backend frontend ingestor translator
-docker compose build translation-scheduler langdetect ner embeddings
+docker compose build --pull backend frontend ingestor translator
+docker compose build --pull translation-scheduler langdetect ner embeddings
 ```
 
 ## Critical Quirks
@@ -76,7 +92,7 @@ docker compose build translation-scheduler langdetect ner embeddings
 
 - **Go workers reuse backend image**: Workers (scraper, discovery, topics, wiki, related) are built into the `backend` Dockerfile as separate binaries (`/scraper`, `/discovery`, etc.) and then invoked with different entrypoints in `docker-compose.yml`. Never `docker compose build` two services against the same image tag in one command (conflicts with `AlreadyExists`).
 
-- **Postgres shm_size**: `db` service has `shm_size: '256m'`. Without it, parallel hash aggregation queries fail with `"could not resize shared memory segment… No space left on device"` (SQLSTATE 53100).
+- **Postgres shm_size**: `db` service has `shm_size: '1gb'`. Without it, parallel hash aggregation queries fail with `"could not resize shared memory segment… No space left on device"` (SQLSTATE 53100); 256 MB was not enough to build the pgvector HNSW index over existing embeddings either.
 
 - **Redis cache flush after format fixes**: If you fix a serialization format in the Go code, run `docker compose exec redis redis-cli FLUSHDB` to clear stale cached responses.
 

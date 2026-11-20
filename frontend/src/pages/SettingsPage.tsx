@@ -265,10 +265,23 @@ export function SettingsPage() {
         )}
 
         {/* App Info */}
-        <section className="bg-white rounded-xl shadow-sm p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4 space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Versión de la App</span>
             <span className="text-gray-900">1.0.0</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-500">Desarrollado por</span>
+            <span className="text-gray-900">Dinámicas Electrónicas</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-500">Contacto</span>
+            <a
+              href="mailto:dinamicas.electronicas@gmail.com"
+              className="text-indigo-600 hover:text-indigo-700 hover:underline"
+            >
+              dinamicas.electronicas@gmail.com
+            </a>
           </div>
         </section>
       </div>

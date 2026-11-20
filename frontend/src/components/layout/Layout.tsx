@@ -266,6 +266,21 @@ export function Layout() {
         </div>
       </div>
 
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-500">
+          <p>
+            © {new Date().getFullYear()} Dinámicas Electrónicas — Código creado por Dinámicas Electrónicas.
+          </p>
+          <a
+            href="mailto:dinamicas.electronicas@gmail.com"
+            className="font-medium text-primary-600 hover:text-primary-700 hover:underline"
+          >
+            dinamicas.electronicas@gmail.com
+          </a>
+        </div>
+      </footer>
+
       {/* Create List Modal */}
       <CreateListModal
         isOpen={showListModal}

@@ -147,14 +147,14 @@ Si prefieres ejecutar sin Docker:
 ### 1. Instalar dependencias
 
 ```bash
-pip install ctranslate2>=3.24.0 transformers>=4.36.0 websocket-client sentencepiece
+pip install ctranslate2==4.9.0 transformers==5.23.0 sentencepiece==0.2.3 websocket-client numpy==1.26.4
 ```
 
 ### 2. Instalar torch (CPU version)
 
 ```bash
 # Solo CPU, sin CUDA
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 ```
 
 ### 3. Configurar y ejecutar
