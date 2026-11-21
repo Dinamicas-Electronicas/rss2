@@ -118,6 +118,38 @@ Los traductores no arrancan hasta que `translator-models` termina con código
 docker compose logs translator-models
 ```
 
+### 4.1. Cachés de Redis en el primer arranque
+
+El backend cachea en Redis varias respuestas con TTL largo. En un arranque
+desde cero eso puede dejar la aplicación "vacía" aunque los datos ya estén en
+PostgreSQL. Incidencias observadas y corregidas en el despliegue verificado del
+2026-11-21:
+
+| Clave | Endpoint | TTL | Cómo se envenena | Síntoma |
+|-------|----------|-----|------------------|---------|
+| `stats` | `GET /api/stats` | 1 h | Consultar las estadísticas antes de que el ingestor inserte la primera noticia | Portada con todos los contadores a 0 durante una hora |
+| `feedlist:*` | `GET /api/feeds` | 1 h | Ejecutar `scripts/seed-feeds.sh` (o un `INSERT` masivo) con el backend ya levantado | La lista de feeds responde `total: 0` |
+
+El CRUD de feeds sí invalida `feedlist:*`, pero el seed no. Para que no ocurra,
+**siembra los feeds antes de arrancar el backend** (es lo que hace
+`deploy.sh`) y no consultes `/api/stats` hasta que el ingestor haya insertado
+noticias.
+
+Corrección en caliente, sin reiniciar ni vaciar toda la caché:
+
+```bash
+RP=$(grep -E '^REDIS_PASSWORD=' .env | cut -d= -f2)
+docker compose exec -T -e REDIS_PASSWORD="$RP" redis sh -lc '
+  redis-cli --no-auth-warning -a "$REDIS_PASSWORD" DEL stats
+  for k in $(redis-cli --no-auth-warning -a "$REDIS_PASSWORD" --scan --pattern "feedlist:*"); do
+    redis-cli --no-auth-warning -a "$REDIS_PASSWORD" DEL "$k"
+  done'
+```
+
+Tras la purga, `curl -s localhost:8888/api/stats` y `/api/feeds` devuelven los
+totales reales. Si se levanta el stack a mano con `docker compose up -d`, el
+orden recomendado es: `db` → `./scripts/seed-feeds.sh` → resto.
+
 ---
 
 ## 5. Actualizar una instalación existente
@@ -181,6 +213,11 @@ base viva):
 make check-schema
 ```
 
+> Despliegue de referencia verificado el 2026-11-21 (8 vCPU, 23 GiB): los 19
+> servicios base y los 3 de `monitoring` quedaron `healthy`, con 0 reinicios y
+> 0 OOM; `check-schema` sin deriva; 55.962 noticias y 1.655 feeds tras el
+> primer ciclo del ingestor.
+
 ---
 
 ## 8. Backup y restauración
@@ -205,7 +242,11 @@ PostgreSQL. Un reset del corpus (TRUNCATE + reingesta) está documentado en
 |---------|------------------|
 | `pull access denied … rss2-backend` | Compose intenta descargar una imagen local. Usa el `docker-compose.yml` actual (etiquetas fijas) y construye el backend primero. |
 | La web tarda en abrir | El backend crea índices al arrancar; espera a que esté `healthy`. |
-| Portada vacía | `feeds` vacío o primer ciclo del ingestor aún en curso: `./scripts/seed-feeds.sh` y `docker compose logs -f ingestor`. |
+| Portada vacía | `feeds` vacío o primer ciclo del ingestor aún en curso: `./scripts/seed-feeds.sh` y `docker compose logs -f ingestor`. Si ya hay noticias, revisa la caché `stats` (§4.1). |
+| `/api/stats` devuelve 0 con noticias ya insertadas | Caché `stats` (TTL 1 h) sembrada antes de la ingesta: purga la clave (§4.1). |
+| `/api/feeds` devuelve `total: 0` tras sembrar | Caché `feedlist:*` no invalidada por el seed: purga las claves (§4.1). |
+| `ingestor`: `Error fetching … context deadline exceeded` o `HTTP 403` | Feeds caídos o que bloquean al bot. Son fallos por feed, no del stack; se reintentan en el siguiente ciclo y `fallos` los desactiva. |
+| Redis: `WARNING Memory overcommit must be enabled!` | Aviso del host, no del stack. Recomendado: `sudo sysctl vm.overcommit_memory=1` y dejarlo en `/etc/sysctl.conf`. |
 | `translator-models` falla | Sin salida a internet o sin espacio para ~2,4 GB. |
 | `502` tras recrear `backend` | Reinicia `nginx` (`docker compose restart nginx`) si tu `nginx.conf` es antiguo. |
 | Redis en bucle | `REDIS_PASSWORD` vacía en `.env`: el `requirepass` queda sin argumento. |
