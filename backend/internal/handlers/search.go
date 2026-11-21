@@ -541,7 +541,12 @@ func GetStats(c *gin.Context) {
 	stats.TranslationStats4d = stats4d
 	stats.TranslationStats5d = stats5d
 
-	cache.Set(ctx, cacheKey, stats, cache.TTLMedium)
+	// No cachear un corpus vacío: en un despliegue nuevo la primera petición
+	// puede llegar antes que el ingestor y dejaría la portada a 0 durante 1 h
+	// (TTLMedium). Con datos, el coste de estas consultas es alto y sí compensa.
+	if stats.TotalNews > 0 {
+		cache.Set(ctx, cacheKey, stats, cache.TTLMedium)
+	}
 
 	c.JSON(http.StatusOK, stats)
 }

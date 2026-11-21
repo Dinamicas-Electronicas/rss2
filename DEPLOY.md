@@ -133,7 +133,10 @@ PostgreSQL. Incidencias observadas y corregidas en el despliegue verificado del
 El CRUD de feeds sí invalida `feedlist:*`, pero el seed no. Para que no ocurra,
 **siembra los feeds antes de arrancar el backend** (es lo que hace
 `deploy.sh`) y no consultes `/api/stats` hasta que el ingestor haya insertado
-noticias.
+noticias. Desde el arreglo del 2026-11-21 esto ya no puede pasar en arranques
+nuevos: `GetStats` no cachea mientras `total_news == 0` y `seed-feeds.sh`
+invalida `stats` y `feedlist:*` al terminar. La purga manual solo hace falta en
+instalaciones que ya tengan la clave envenenada.
 
 Corrección en caliente, sin reiniciar ni vaciar toda la caché:
 

@@ -108,3 +108,18 @@ psql_run -q -c "DROP TABLE IF EXISTS _seed_feeds;"
 AFTER="$(psql_run -tA -c "SELECT count(*) FROM feeds;")"
 
 echo "==> Feeds en la base de datos: ${AFTER} (nuevos: $((AFTER - BEFORE)))"
+
+# El INSERT va por SQL directo, así que no pasa por el CRUD y no dispara la
+# invalidación de caché del backend: sin esto, con el backend levantado la
+# lista de feeds seguiría devolviendo total=0 hasta una hora (TTLMedium).
+# Best-effort: si Redis no está levantado (primer arranque) no hay caché que
+# purgar y el script no debe fallar por ello.
+REDIS_PASS="$(grep -E '^REDIS_PASSWORD=' .env | cut -d= -f2- | tr -d '"' | tr -d "'")"
+if docker compose ps --status running --services 2>/dev/null | grep -qx redis; then
+    docker compose exec -T -e REDIS_PASSWORD="$REDIS_PASS" redis sh -lc '
+        redis-cli --no-auth-warning -a "$REDIS_PASSWORD" DEL stats >/dev/null
+        for k in $(redis-cli --no-auth-warning -a "$REDIS_PASSWORD" --scan --pattern "feedlist:*"); do
+            redis-cli --no-auth-warning -a "$REDIS_PASSWORD" DEL "$k" >/dev/null
+        done' >/dev/null 2>&1 || true
+    echo "==> Caché de stats y listado de feeds invalidada"
+fi
