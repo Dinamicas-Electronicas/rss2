@@ -59,6 +59,11 @@ function App() {
             <span className="text-2xl font-mono font-bold text-rss-green-phosphor">R2</span>
           </div>
           <div className="animate-pulse text-rss-text-secondary text-sm font-mono">Loading...</div>
+          <p className="text-[11px] text-rss-text-secondary font-mono text-center">
+            Creado por Dinámicas Electrónicas
+            <br />
+            dinamicas.electronicas@gmail.com
+          </p>
         </div>
       </div>
     )

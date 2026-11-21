@@ -4,6 +4,10 @@
 # ==============================================================================
 # Ejecuta el worker que se conecta al servidor y reenvía jobs de traducción.
 # Primera vez pide API key, luego funciona automáticamente.
+#
+# Creado por Dinámicas Electrónicas <dinamicas.electronicas@gmail.com>
+# Copyright (c) 2026 Dinámicas Electrónicas
+# SPDX-License-Identifier: MIT
 #==============================================================================
 
 export WORKER_NAME="${WORKER_NAME:-termux-$(date +%s)}"

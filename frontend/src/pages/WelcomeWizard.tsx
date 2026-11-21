@@ -350,6 +350,16 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
         <p className="text-center text-xs text-gray-400 mt-4">
           Paso {step} de {totalSteps}
         </p>
+
+        <p className="text-center text-[11px] text-gray-400 mt-2">
+          Creado por Dinámicas Electrónicas ·{' '}
+          <a
+            href="mailto:dinamicas.electronicas@gmail.com"
+            className="underline hover:text-gray-600"
+          >
+            dinamicas.electronicas@gmail.com
+          </a>
+        </p>
       </div>
     </div>
   )
